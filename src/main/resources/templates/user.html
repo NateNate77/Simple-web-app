@@ -1,0 +1,68 @@
+<!--<%&#45;&#45;-->
+  <!--Created by IntelliJ IDEA.-->
+  <!--User: Admin-->
+  <!--Date: 16.11.2018-->
+  <!--Time: 20:02-->
+  <!--To change this template use File | Settings | File Templates.-->
+<!--&#45;&#45;%>-->
+<!--<%@ page contentType="text/html;charset=UTF-8" language="java" %>-->
+<!--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>-->
+
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Users</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!--<html>-->
+  <!--<head>-->
+    <!--&lt;!&ndash;<title>$Title$</title>&ndash;&gt;-->
+    <!--<title>Bljskdjhelkh</title>-->
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body>
+
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Имя сотрудника</th>
+      <th>Организация</th>
+      <th>Руководитель</th>
+    </tr>
+
+    <tr th:each="user : ${userList}">
+      <td th:utext="${user.id}">..</td>
+      <td th:utext="${user.name}">..</td>
+      <td th:utext="${user.companyName}">..</td>
+      <td th:utext="${user.bossName}">..</td>
+    </tr>
+
+    <!--<c:forEach var="user" items="${userList}">-->
+      <!--<tr>-->
+        <!--<td>${user.id}</td>-->
+        <!--<td>${user.name}</td>-->
+        <!--<td>${user.companyId}</td>-->
+        <!--<td>${user.bossId}</td>-->
+      <!--</tr>-->
+    <!--</c:forEach>-->
+  </table>
+  <a href="/add-new-user">Add new user</a>
+  <a href="/company">Company</a>
+  </body>
+</html>
