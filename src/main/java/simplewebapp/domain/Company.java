@@ -8,16 +8,18 @@ public class Company {
 
     private int id;
     private String name;
-    private int headCompanyId;
+    private Integer headCompanyId;
+    private String headCompanyName;
 
     public Company(){
 
     }
 
-    public Company(int id, String name, int headCompanyId){
+    public Company(int id, String name, Integer headCompanyId, String headCompanyName){
         this.id = id;
         this.name = name;
         this.headCompanyId = headCompanyId;
+        this.headCompanyName = headCompanyName;
     }
 
     public int getId() {
@@ -42,5 +44,13 @@ public class Company {
 
     public void setHeadCompanyId(int headCompanyId) {
         this.headCompanyId = headCompanyId;
+    }
+
+    public String getHeadCompanyName() {
+        return headCompanyName;
+    }
+
+    public void setHeadCompanyName(String headCompanyName) {
+        this.headCompanyName = headCompanyName;
     }
 }
