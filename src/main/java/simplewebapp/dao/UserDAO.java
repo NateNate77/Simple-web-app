@@ -35,19 +35,34 @@ public class UserDAO extends JdbcDaoSupport {
         return list;
     }
 
-    public User findUser(int id) {
-
-        String sql = UserMapper.BASE_SQL + " where Staff.ID = ? ";
-
-        Object[] params = new Object[] { id };
-        UserMapper mapper = new UserMapper();
-        try {
-            User user = this.getJdbcTemplate().queryForObject(sql, params, mapper);
-            return user;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+//    public User findUser(int id) {
+//
+//        String sql = UserMapper.BASE_SQL + " where Staff.ID = ? ";
+//
+//        Object[] params = new Object[] { id };
+//        UserMapper mapper = new UserMapper();
+//        try {
+//            User user = this.getJdbcTemplate().queryForObject(sql, params, mapper);
+//            return user;
+//        } catch (EmptyResultDataAccessException e) {
+//            return null;
+//        }
+//    }
+//
+    public void addUser(String name, String bossId, String companyId){
+        String sql = String.format(UserMapper.insrtSQL, name , bossId, companyId) ;
+        this.getJdbcTemplate().update(sql);
     }
+
+    public List<User> getUsersByCompany(String companyId){
+        String sql = UserMapper.BASE_SQL + " WHERE Users.\"CompanyID\" =" + companyId + ";";
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+       List<User> listUsersByCompany = this.getJdbcTemplate().query(sql, params, mapper);
+       return listUsersByCompany;
+
+    }
+
 
 
 }

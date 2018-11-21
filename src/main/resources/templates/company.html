@@ -24,7 +24,7 @@
 </head>
 
 <body>
-
+<div th:insert="~{layout :: header}"></div>
 <table>
     <tr>
         <th>ID</th>
@@ -38,7 +38,7 @@
     </tr>
 
 </table>
-
-
+<!--<a href="/add-new-company">Create</a>-->
+<button onclick="location.href='/add-new-company'">Create</button>
 </body>
 </html>

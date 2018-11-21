@@ -31,18 +31,26 @@ public class CompanyController {
     }
 
     @RequestMapping(value = "/add-new-company", method=RequestMethod.GET)
-    public String addNewUserPage() {
-        return "pages/addNewCompany";
+    public String addNewCompanyPage(Model model) {
+        List<Company> companyList = companyDAO.getCompanies();
+        model.addAttribute("companyList", companyList);
+        return "addNewCompany.html";
     }
 
     @RequestMapping(value="/add-new-company", method=RequestMethod.POST)
-    public String addNewUser(@RequestParam(value="name") String name, @RequestParam(value="headCompanyId") int headCompanyId) {
-        Company company = new Company();
-        company.setName(name);
-        company.setHeadCompanyId(headCompanyId);
-        company.setId(CompanyRepository.counter);
-        CompanyRepository.companies.add(company);
-        CompanyRepository.counter++;
+    public String addNewCompany(@RequestParam(value="name") String name, @RequestParam(value="headCompanyId") String headCompanyId) {
+//        Company company = new Company();
+//        company.setName(name);
+//        company.setHeadCompanyId(headCompanyId);
+//        company.setId(CompanyRepository.counter);
+//        CompanyRepository.companies.add(company);
+//        CompanyRepository.counter++;
+//        String insrtSQL =  "INSERT INTO public.\"Companies\" (\"Name\", \"HeadCompanyID\") VALUES (name, headCompanyId)";
+        if(headCompanyId.equals("")){
+            headCompanyId = "null";
+        }
+          companyDAO.addCompany(name, headCompanyId);
+
         return "redirect:/";
     }
 }

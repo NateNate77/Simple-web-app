@@ -17,7 +17,12 @@ public class UserMapper implements RowMapper<User> {
             "\tInner join public.\"Companies\" as Companies\n" +
             "\ton Users.\"CompanyID\" = Companies.\"ID\"\n" +
             "\tleft join public.\"Staff\" as Boss\n" +
-            "\ton Boss.\"ID\" = Users.\"BossID\";";
+            "\ton Boss.\"ID\" = Users.\"BossID\"";
+
+    public static final String insrtSQL = "INSERT INTO public.\"Staff\" (\"Name\", \"BossID\", \"CompanyID\") VALUES (\'%s\', %s, %s)";
+//    public static final String getUsersByCompanySQL = "SELECT Staff.\"Name\"\n" +
+//            "\tFROM public.\"Staff\" as Staff\n" +
+//            "\tWhere  Staff.\"CompanyID\" = %s";
 
 
 

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Users</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+<form action="/add-new-company" method="POST">
+    <label>Name</label>
+    <input type="text" name="name">
+    <!--<label>Head Company Name</label>-->
+    <!--<input type="text" name="headCompanyId">-->
+
+
+    <select class="form-control" name="headCompanyId" id="headCompanyId">
+        <option value=""></option>
+        <option th:each="company : ${companyList}"
+                th:value="${company.id}"
+                th:text="${company.name}"/>
+    </select>
+    <input type="submit" value="Ok">
+</form>
+
+</body>
+</html>

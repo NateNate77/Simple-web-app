@@ -16,6 +16,8 @@ public class CompanyMapper implements RowMapper<Company> {
             "\tFROM public.\"Companies\" as Companies\n" +
             "\tleft join public.\"Companies\" as HeadCompany\n" +
             "\ton HeadCompany.\"ID\" = Companies.\"HeadCompanyID\";";
+
+    public static final String insrtSQL =  "INSERT INTO public.\"Companies\" (\"Name\", \"HeadCompanyID\") VALUES (\'%s\', %s)";
     @Override
     public Company mapRow(ResultSet rs, int rowNum) throws SQLException{
         int id = rs.getInt("ID");

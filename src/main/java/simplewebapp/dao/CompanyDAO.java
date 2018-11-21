@@ -8,6 +8,8 @@ import simplewebapp.domain.Company;
 import simplewebapp.mapper.CompanyMapper;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -31,6 +33,13 @@ public class CompanyDAO extends JdbcDaoSupport {
         List<Company> list = this.getJdbcTemplate().query(sql, params, mapper);
 
         return list;
+    }
+
+
+    public void addCompany(String name, String headCompanyId){
+        String sql = String.format(CompanyMapper.insrtSQL, name , headCompanyId) ;
+        this.getJdbcTemplate().update(sql);
+
     }
 
 }

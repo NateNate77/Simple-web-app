@@ -33,6 +33,7 @@
     </style>
   </head>
   <body>
+  <div th:insert="~{layout :: header}"></div>
 
 
   <table>
@@ -51,8 +52,9 @@
     </tr>
 
   </table>
-  <a href="/add-new-user">Add new user</a>
-  <a href="/company">Company</a>
-  <a href="/">Staff</a>
+  <!--<a href="/add-new-user">Create</a>-->
+  <button onclick="location.href='/add-new-user'">Create</button>
+  <!--<a href="/company">Company</a>-->
+  <!--<a href="/">Staff</a>-->
   </body>
 </html>
