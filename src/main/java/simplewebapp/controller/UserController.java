@@ -43,9 +43,13 @@ public class UserController {
         return "addNewUser.html";
     }
 
+
+
     @RequestMapping(value="/add-new-user", method=RequestMethod.POST)
     public String addNewUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId) {
-
+        if(bossId.equals("")){
+            bossId = "null";
+        }
         userDAO.addUser(name, bossId, companyId);
         return "redirect:/";
     }

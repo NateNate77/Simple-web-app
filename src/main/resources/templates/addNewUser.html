@@ -3,6 +3,7 @@
 <head>
     <title>Users</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="script.js" defer></script>
 </head>
 <body>
 
@@ -15,10 +16,15 @@
     <!--<input type="text" name="bossId">-->
 
 
-    <select class="form-control" name="companyId" id="companyId">
+    <select class="form-control" onchange =getUsersByCompany(this.value) name="companyId" id="companyId">
         <option th:each="company : ${companyList}"
                 th:value="${company.id}"
                 th:text="${company.name}"/>
+    </select>
+
+
+    <select id="bossId" name="bossId">
+        <!--<option value=""></option>-->
     </select>
     <input type="submit" value="Ok">
 </form>

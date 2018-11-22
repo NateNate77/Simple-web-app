@@ -33,7 +33,7 @@
     </tr>
     <tr th:each="company : ${companyList}">
         <td th:utext="${company.id}">..</td>
-        <td th:utext="${company.name}">..</td>
+        <td ><a th:utext="${company.name}" href="updateCompany.html"></a></td>
         <td th:utext="${company.headCompanyName}">..</td>
     </tr>
 

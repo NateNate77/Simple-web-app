@@ -46,7 +46,7 @@
 
     <tr th:each="user : ${userList}">
       <td th:utext="${user.id}">..</td>
-      <td th:utext="${user.name}">..</td>
+      <td><a th:utext="${user.name}" href="updateUser.html"></a>..</td>
       <td th:utext="${user.companyName}">..</td>
       <td th:utext="${user.bossName}">..</td>
     </tr>
