@@ -33,12 +33,12 @@
     </tr>
     <tr th:each="company : ${companyList}">
         <td th:utext="${company.id}">..</td>
-        <td ><a th:utext="${company.name}" href="updateCompany.html"></a></td>
+        <td ><a th:utext="${company.name}" th:href="|/update-company?id=${company.id}|" title="Изменить"></a></td>
         <td th:utext="${company.headCompanyName}">..</td>
     </tr>
 
 </table>
-<!--<a href="/add-new-company">Create</a>-->
+
 <button onclick="location.href='/add-new-company'">Create</button>
 </body>
 </html>

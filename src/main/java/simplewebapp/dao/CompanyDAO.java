@@ -42,4 +42,36 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     }
 
+    public Company getCompanyForUpdate(String id){
+        String sql = CompanyMapper.BASE_SQL + " WHERE Companies.\"ID\" =" + id + ";";
+        Object[] params = new Object[] {};
+        CompanyMapper mapper = new CompanyMapper();
+        List<Company> company = this.getJdbcTemplate().query(sql, params, mapper);
+        return company.get(0);
+
+    }
+
+    public void updateCompany(String name, String headCompanyId, String id){
+        String sql = String.format(CompanyMapper.updateSQL, name, headCompanyId, id);
+        this.getJdbcTemplate().update(sql);
+
+    }
+
+    public void deleteCompany(String id) throws Exception {
+        String sql = CompanyMapper.BASE_SQL + " WHERE Companies.\"HeadCompanyID\" =" + id + ";";
+        Object[] params = new Object[] {};
+        CompanyMapper mapper = new CompanyMapper();
+        List<Company> user = this.getJdbcTemplate().query(sql, params, mapper);
+        if(user.size()>0){
+            throw new Exception("Оргнизация не может быть удалена, тк у нее есть дочерние организации");
+        }
+        else {
+            String deleteFromSql = String.format(CompanyMapper.deleteCompanySQL, id);
+            this.getJdbcTemplate().update(deleteFromSql);
+        }
+
+    }
+
+
+
 }

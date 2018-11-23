@@ -15,9 +15,16 @@ public class CompanyMapper implements RowMapper<Company> {
     ="SELECT Companies.\"ID\", Companies.\"Name\", Companies.\"HeadCompanyID\", HeadCompany.\"Name\" as \"HeadCompanyName\"\n" +
             "\tFROM public.\"Companies\" as Companies\n" +
             "\tleft join public.\"Companies\" as HeadCompany\n" +
-            "\ton HeadCompany.\"ID\" = Companies.\"HeadCompanyID\";";
+            "\ton HeadCompany.\"ID\" = Companies.\"HeadCompanyID\"";
 
     public static final String insrtSQL =  "INSERT INTO public.\"Companies\" (\"Name\", \"HeadCompanyID\") VALUES (\'%s\', %s)";
+
+    public static final String updateSQL = "UPDATE public.\"Companies\"\n" +
+            "\tSET \"Name\"=\'%s\', \"HeadCompanyID\"=%s\n" +
+            "\tWHERE \"ID\" =%s";
+
+    public static final String deleteCompanySQL = "DELETE FROM public.\"Companies\"\n" +
+            "\tWHERE \"ID\"=%s";
     @Override
     public Company mapRow(ResultSet rs, int rowNum) throws SQLException{
         int id = rs.getInt("ID");

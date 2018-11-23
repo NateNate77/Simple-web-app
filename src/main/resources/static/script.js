@@ -22,6 +22,7 @@ function getUsersByCompany(companyId){
             optNull.text="";
             optNull.value = "";
             el.appendChild(optNull);
+
             for(var i=0;i<mas.length;i++){
                 var opt = document.createElement("option");
                 opt.text=mas[i].name;
@@ -34,6 +35,39 @@ function getUsersByCompany(companyId){
         }
     });
 }
+
+function deleteUser(id) {
+    $.ajax({
+        type: "POST",
+        url: "/delete-user",
+        data: "id=" + id,
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert($.parseJSON(xhr.responseText).message);
+        },
+        success: function (data) {
+           window.location = "/";
+        }
+    });
+
+}
+
+function deleteCompany(id) {
+    $.ajax({
+        type: "POST",
+        url: "/delete-company",
+        data: "id=" + id,
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert($.parseJSON(xhr.responseText).message);
+        },
+        success: function (data) {
+            window.location = "/company";
+        }
+    });
+
+}
+
+
+
 
 
 

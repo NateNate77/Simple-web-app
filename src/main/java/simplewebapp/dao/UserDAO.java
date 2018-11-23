@@ -63,6 +63,34 @@ public class UserDAO extends JdbcDaoSupport {
 
     }
 
+    public User getUserForUpdate(String id){
+        String sql = UserMapper.BASE_SQL + " WHERE Users.\"ID\" =" + id + ";";
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+        List<User> user = this.getJdbcTemplate().query(sql, params, mapper);
+        return user.get(0);
+    }
+
+    public void updateUser(String name, String bossId, String companyId, String id){
+        String sql = String.format(UserMapper.updateUserSQL, name, bossId, companyId, id);
+        this.getJdbcTemplate().update(sql);
+    }
+
+    public void deleteUser(String id) throws Exception {
+        String sql = UserMapper.BASE_SQL + " WHERE Users.\"BossID\" =" + id + ";";
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+        List<User> user = this.getJdbcTemplate().query(sql, params, mapper);
+        if(user.size()>0){
+            throw new Exception("Пользователь не может быть удален, тк у него есть подчиненные");
+        }
+        else {
+            String deleteFromSql = String.format(UserMapper.deleteUserSQL, id);
+            this.getJdbcTemplate().update(deleteFromSql);
+        }
+
+    }
+
 
 
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Companies</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="script.js" defer></script>
+</head>
+<body>
+<form action="/update-user" method="POST">
+    <h3>Измените данные</h3>
+
+    <input hidden name="id" th:value="${userUpdate.id}">
+    <label>Name</label>
+    <input type="text" name="name" th:value="${userUpdate.name}">
+
+
+    <select class="form-control" onchange =getUsersByCompany(this.value) name="companyId" id="companyId" >
+        <option th:each="company : ${companyList}"
+                th:value="${company.id}"
+                th:text="${company.name}"
+                th:selected="${userUpdate.companyId==company.id}"/>
+    </select>
+
+
+    <select id="bossId" name="bossId">
+
+    </select>
+    <input type="submit" value="Update">
+
+
+    <!--<form action="/delete-user" method="POST">-->
+        <!--<input hidden name = "id" th:value="%{userUpdate.id}">-->
+        <!--<input type="submit" value="Delete user">-->
+    <!--</form>-->
+</form>
+<button th:onclick="'deleteUser(\'' + ${userUpdate.id} + '\');'">Delete user</button>
+
+
+</body>
+</html>

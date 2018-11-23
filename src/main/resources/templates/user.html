@@ -46,15 +46,14 @@
 
     <tr th:each="user : ${userList}">
       <td th:utext="${user.id}">..</td>
-      <td><a th:utext="${user.name}" href="updateUser.html"></a>..</td>
+      <td><a th:utext="${user.name}" th:href="|/update-user?id=${user.id}|" title="Изменить"></a></td>
       <td th:utext="${user.companyName}">..</td>
       <td th:utext="${user.bossName}">..</td>
     </tr>
 
   </table>
-  <!--<a href="/add-new-user">Create</a>-->
+
   <button onclick="location.href='/add-new-user'">Create</button>
-  <!--<a href="/company">Company</a>-->
-  <!--<a href="/">Staff</a>-->
+
   </body>
 </html>

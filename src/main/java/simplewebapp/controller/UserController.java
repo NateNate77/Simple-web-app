@@ -62,4 +62,38 @@ public class UserController {
         return usersByCompany;
     }
 
+
+    @RequestMapping(value = "/update-user", method=RequestMethod.GET)
+ //   @ResponseBody
+    public String updateCompany (Model model, @RequestParam(value="id") String id) {
+
+        User userUpdate = userDAO.getUserForUpdate(id);
+        model.addAttribute("userUpdate", userUpdate);
+        List<Company> companyList = companyDAO.getCompanies();
+        model.addAttribute("companyList", companyList);
+//        List<User> usersByCompany = userDAO.getUsersByCompany(companyId);
+
+        return "updateUser.html";
+    }
+
+    @RequestMapping(value="/update-user", method=RequestMethod.POST)
+    public String updateUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId, @RequestParam(value="id") String id) {
+        if(bossId.equals("")){
+            bossId = "null";
+        }
+        userDAO.updateUser(name, bossId, companyId, id);
+        return "redirect:/";
+    }
+
+    @RequestMapping(value="/delete-user", method=RequestMethod.POST)
+    @ResponseBody
+    public String deleteUser(@RequestParam(value="id") String id) throws Exception {
+
+        userDAO.deleteUser(id);
+        return "Success";
+    }
+
+
+
+
 }

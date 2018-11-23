@@ -20,9 +20,14 @@ public class UserMapper implements RowMapper<User> {
             "\ton Boss.\"ID\" = Users.\"BossID\"";
 
     public static final String insrtSQL = "INSERT INTO public.\"Staff\" (\"Name\", \"BossID\", \"CompanyID\") VALUES (\'%s\', %s, %s)";
-//    public static final String getUsersByCompanySQL = "SELECT Staff.\"Name\"\n" +
-//            "\tFROM public.\"Staff\" as Staff\n" +
-//            "\tWhere  Staff.\"CompanyID\" = %s";
+
+    public static final String updateUserSQL = "UPDATE public.\"Staff\"\n" +
+            "\tSET \"Name\"=\'%s\', \"BossID\"=%s, \"CompanyID\"=%s\n" +
+            "\tWHERE \"ID\"= %s";
+
+    public static final String deleteUserSQL = "DELETE FROM public.\"Staff\"\n" +
+            "\tWHERE \"ID\" =%s";
+
 
 
 
