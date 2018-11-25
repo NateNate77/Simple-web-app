@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Companies</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+</head>
+
+<body>
+<div th:insert="~{layout :: header}"></div>
+
+<div th:fragment="tree">
+    <ul>
+        <li th:each="companyTree : ${companyTreeList}">
+            <span th:text="${companyTree.company.name}"></span>
+            <div th:with=" companyTreeList = ${companyTree.companyTrees}" th:include="this :: tree"></div>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>
