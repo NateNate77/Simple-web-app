@@ -148,6 +148,10 @@ public class UserController {
     }
 
 
-
-
+    @RequestMapping(value="/find-user", method=RequestMethod.POST)
+    public String findUser(Model model, @RequestParam(value="name") String name) {
+        List<User> findUserList = userDAO.findUser(name);
+        model.addAttribute("userList", findUserList);
+        return "user.html";
+    }
 }

@@ -35,7 +35,10 @@
   <body>
   <div th:insert="~{layout :: header}"></div>
 
-
+<form action="/find-user" method="POST">
+  <input type="text" name="name">
+  <input type="submit" value="Найти">
+</form>
   <table>
     <tr>
       <th>ID</th>

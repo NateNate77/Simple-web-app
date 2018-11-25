@@ -35,20 +35,20 @@ public class UserDAO extends JdbcDaoSupport {
         return list;
     }
 
-//    public User findUser(int id) {
-//
-//        String sql = UserMapper.BASE_SQL + " where Staff.ID = ? ";
-//
-//        Object[] params = new Object[] { id };
-//        UserMapper mapper = new UserMapper();
-//        try {
-//            User user = this.getJdbcTemplate().queryForObject(sql, params, mapper);
-//            return user;
-//        } catch (EmptyResultDataAccessException e) {
-//            return null;
-//        }
-//    }
-//
+    public List<User> findUser(String name) {
+
+        String sql = UserMapper.BASE_SQL + " WHERE Users.\"Name\" ilike \'%" + name + "%\'";
+
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+        try {
+            List users = this.getJdbcTemplate().query(sql, params, mapper);
+            return users;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
     public void addUser(String name, String bossId, String companyId){
         String sql = String.format(UserMapper.insrtSQL, name , bossId, companyId) ;
         this.getJdbcTemplate().update(sql);
@@ -90,7 +90,4 @@ public class UserDAO extends JdbcDaoSupport {
         }
 
     }
-
-
-
 }

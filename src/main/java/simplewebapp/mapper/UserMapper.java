@@ -28,9 +28,6 @@ public class UserMapper implements RowMapper<User> {
     public static final String deleteUserSQL = "DELETE FROM public.\"Staff\"\n" +
             "\tWHERE \"ID\" =%s";
 
-
-
-
     @Override
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 
