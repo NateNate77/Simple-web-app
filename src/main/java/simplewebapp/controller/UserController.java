@@ -12,10 +12,12 @@ import simplewebapp.dao.CompanyDAO;
 import simplewebapp.dao.UserDAO;
 import simplewebapp.domain.Company;
 import simplewebapp.domain.User;
+import simplewebapp.domain.UserTree;
 import simplewebapp.repository.UserRepository;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -91,6 +93,58 @@ public class UserController {
 
         userDAO.deleteUser(id);
         return "Success";
+    }
+
+
+    @RequestMapping(value = "/staff-tree-view", method=RequestMethod.GET)
+    public String staffTreeView (Model model) {
+        List<User> bossList = new ArrayList<>();
+        List <User> userList = userDAO.getUsers();
+        for (int i = 0; i < userList.size(); i++){
+            if(userList.get(i).getBossId()==null){
+                bossList.add(userList.get(i));
+            }
+        }
+
+
+
+        List<UserTree> userTreeList = userTree(userList, bossList);
+        model.addAttribute("userTreeList", userTreeList);
+
+        return "staffTree.html";
+    }
+
+
+    public List<UserTree> userTree(List<User> userList, List<User> bossList){
+        List<UserTree> userTreeList = new ArrayList<>();
+
+
+
+        for (int j = 0; j<bossList.size(); j++){
+            UserTree userTree = new UserTree();
+            userTree.user = bossList.get(j);
+            userTreeList.add(userTree);
+
+            recursionUserTree(userTree, userList);
+
+        }
+        return userTreeList;
+    }
+
+    public UserTree recursionUserTree(UserTree userTree, List<User> userList){
+
+        for(int i = 0; i<userList.size(); i++){
+
+                if(userList.get(i).getBossId() != null && userList.get(i).getBossId() == userTree.user.getId()){
+
+                    UserTree userTreeIn = new UserTree();
+                    userTreeIn.user = userList.get(i);
+                    userTree.userTrees.add(userTreeIn);
+                    recursionUserTree(userTreeIn, userList);
+                }
+        }
+
+        return userTree;
     }
 
 

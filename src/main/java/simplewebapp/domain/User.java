@@ -73,3 +73,4 @@ public class User {
         this.companyName = companyName;
     }
 }
+

@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import simplewebapp.dao.CompanyDAO;
 import simplewebapp.domain.Company;
+import simplewebapp.domain.CompanyTree;
 import simplewebapp.domain.User;
 import simplewebapp.repository.CompanyRepository;
 import simplewebapp.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,6 +84,54 @@ public class CompanyController {
 
         companyDAO.deleteCompany(id);
         return "Success";
+    }
+
+
+    @RequestMapping(value = "/companies-tree-view", method=RequestMethod.GET)
+    public String companyTreeView (Model model) {
+        List<Company> headCompanyList = new ArrayList<>();
+        List <Company> companyList = companyDAO.getCompanies();
+        for (int i = 0; i < companyList.size(); i++){
+            if(companyList.get(i).getHeadCompanyId() == null){
+                headCompanyList.add(companyList.get(i));
+            }
+        }
+
+        List<CompanyTree> companyTreeList = companyTree(companyList, headCompanyList);
+        model.addAttribute("companyTreeList", companyTreeList);
+
+        return "companiesTree.html";
+    }
+
+
+    public List<CompanyTree> companyTree(List<Company> companyList, List<Company> headCompanyList){
+        List<CompanyTree> companyTreeList = new ArrayList<>();
+
+        for (int j = 0; j<headCompanyList.size(); j++){
+            CompanyTree companyTree = new CompanyTree();
+            companyTree.company = headCompanyList.get(j);
+            companyTreeList.add(companyTree);
+
+            recursionCompanyTree(companyTree, companyList);
+
+        }
+        return companyTreeList;
+    }
+
+    public CompanyTree recursionCompanyTree(CompanyTree companyTree, List<Company> companyList){
+
+        for(int i = 0; i<companyList.size(); i++){
+
+            if(companyList.get(i).getHeadCompanyId() != null && companyList.get(i).getHeadCompanyId() == companyTree.company.getId()){
+
+                CompanyTree companyTreeIn = new CompanyTree();
+                companyTreeIn.company = companyList.get(i);
+                companyTree.companyTrees.add(companyTreeIn);
+                recursionCompanyTree(companyTreeIn, companyList);
+            }
+        }
+
+        return companyTree;
     }
 
 

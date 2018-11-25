@@ -38,7 +38,7 @@ public class Company {
         this.name = name;
     }
 
-    public int getHeadCompanyId() {
+    public Integer getHeadCompanyId() {
         return headCompanyId;
     }
 
