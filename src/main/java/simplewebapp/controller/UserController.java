@@ -154,4 +154,12 @@ public class UserController {
         model.addAttribute("userList", findUserList);
         return "user.html";
     }
+
+    @RequestMapping(value="/find-company", method=RequestMethod.POST)
+    public String findCompany(Model model, @RequestParam(value="companyName") String companyName) {
+        List<User> findCompanyList = userDAO.findCompany(companyName);
+        model.addAttribute("userList", findCompanyList);
+        return "user.html";
+    }
+
 }

@@ -134,6 +134,11 @@ public class CompanyController {
         return companyTree;
     }
 
-
+    @RequestMapping(value="/find-companies", method=RequestMethod.POST)
+    public String findCompanies(Model model, @RequestParam(value="name") String name) {
+        List<Company> findCompaniesList = companyDAO.findCompanies(name);
+        model.addAttribute("companyList", findCompaniesList);
+        return "company.html";
+    }
 
 }

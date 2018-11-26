@@ -25,16 +25,24 @@
 
 <body>
 <div th:insert="~{layout :: header}"></div>
+
+<form action="/find-companies" method="POST">
+    <input type="text" name="name">
+    <input type="submit" value="Найти организацию">
+</form>
+
 <table>
     <tr>
         <th>ID</th>
         <th>Название организации</th>
         <th>Название головной организации</th>
+        <th>Количество сотрудников</th>
     </tr>
     <tr th:each="company : ${companyList}">
         <td th:utext="${company.id}">..</td>
         <td ><a th:utext="${company.name}" th:href="|/update-company?id=${company.id}|" title="Изменить"></a></td>
         <td th:utext="${company.headCompanyName}">..</td>
+        <td th:utext="${company.usersCount}"></td>
     </tr>
 
 </table>

@@ -90,4 +90,19 @@ public class UserDAO extends JdbcDaoSupport {
         }
 
     }
+
+    public List<User> findCompany(String companyName) {
+
+        String sql = UserMapper.BASE_SQL + " WHERE Companies.\"Name\" ilike \'%" + companyName + "%\'";
+
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+        try {
+            List companies = this.getJdbcTemplate().query(sql, params, mapper);
+            return companies;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
 }

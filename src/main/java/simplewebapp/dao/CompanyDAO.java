@@ -1,6 +1,7 @@
 package simplewebapp.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     public List<Company> getCompanies() {
 
-        String sql = CompanyMapper.BASE_SQL;
+        String sql = String.format(CompanyMapper.BASE_SQL, "");
 
         Object[] params = new Object[] {};
         CompanyMapper mapper = new CompanyMapper();
@@ -43,7 +44,9 @@ public class CompanyDAO extends JdbcDaoSupport {
     }
 
     public Company getCompanyForUpdate(String id){
-        String sql = CompanyMapper.BASE_SQL + " WHERE Companies.\"ID\" =" + id + ";";
+        String sqlWhere = " WHERE Companies.\"ID\" =" + id;
+//        String sql = CompanyMapper.BASE_SQL + " WHERE Companies.\"ID\" =" + id + ";";
+        String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         CompanyMapper mapper = new CompanyMapper();
         List<Company> company = this.getJdbcTemplate().query(sql, params, mapper);
@@ -58,7 +61,8 @@ public class CompanyDAO extends JdbcDaoSupport {
     }
 
     public void deleteCompany(String id) throws Exception {
-        String sql = CompanyMapper.BASE_SQL + " WHERE Companies.\"HeadCompanyID\" =" + id + ";";
+        String sqlWhere = " WHERE Companies.\"HeadCompanyID\" =" + id;
+        String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         CompanyMapper mapper = new CompanyMapper();
         List<Company> user = this.getJdbcTemplate().query(sql, params, mapper);
@@ -72,6 +76,17 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     }
 
+    public List<Company> findCompanies(String name) {
+        String sqlWhere = " WHERE Companies.\"Name\" ilike \'%" + name + "%\'";
+        String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
 
-
+        Object[] params = new Object[] {};
+        CompanyMapper mapper = new CompanyMapper();
+        try {
+            List companies = this.getJdbcTemplate().query(sql, params, mapper);
+            return companies;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

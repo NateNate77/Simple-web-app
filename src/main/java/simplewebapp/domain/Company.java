@@ -10,16 +10,18 @@ public class Company {
     private String name;
     private Integer headCompanyId;
     private String headCompanyName;
+    private int usersCount;
 
     public Company(){
 
     }
 
-    public Company(int id, String name, Integer headCompanyId, String headCompanyName){
+    public Company(int id, String name, Integer headCompanyId, String headCompanyName, int usersCount){
         this.id = id;
         this.name = name;
         this.headCompanyId = headCompanyId;
         this.headCompanyName = headCompanyName;
+        this.usersCount = usersCount;
     }
 
     public int getId() {
@@ -52,5 +54,13 @@ public class Company {
 
     public void setHeadCompanyName(String headCompanyName) {
         this.headCompanyName = headCompanyName;
+    }
+
+    public int getUsersCount() {
+        return usersCount;
+    }
+
+    public void setUsersCount(int usersCount) {
+        this.usersCount = usersCount;
     }
 }
