@@ -59,8 +59,8 @@ public class UserController {
 
     @RequestMapping(value="/get-users-by-company", method=RequestMethod.POST)
     @ResponseBody
-    public List<User> getUsersByCompany(@RequestParam(value="companyId") String companyId) throws IOException {
-        List<User> usersByCompany = userDAO.getUsersByCompany(companyId);
+    public List<User> getUsersByCompany(@RequestParam(value="companyId") String companyId,  @RequestParam(value="id") String id) throws IOException {
+        List<User> usersByCompany = userDAO.getUsersByCompany(companyId, id);
         return usersByCompany;
     }
 

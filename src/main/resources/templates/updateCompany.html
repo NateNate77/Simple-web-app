@@ -7,7 +7,12 @@
 
 </head>
 <body>
+
+<div th:insert="~{layout :: header}"></div>
+
 <form action="/update-company" method="POST">
+
+    <span th:if="${logError != null}" class="error" th:text="${logError}"></span>
     <h3>Измените данные</h3>
 
     <input hidden name="id" th:value="${companyUpdate.id}">

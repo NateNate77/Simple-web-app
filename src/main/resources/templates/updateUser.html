@@ -6,13 +6,16 @@
     <script src="script.js" defer></script>
 </head>
 <body>
+
+<div th:insert="~{layout :: header}"></div>
+
 <form action="/update-user" method="POST">
 
     <span th:if="${logError != null}" class="error" th:text="${logError}"></span>
 
     <h3>Измените данные</h3>
 
-    <input hidden name="id" th:value="${userUpdate.id}">
+    <input hidden id="userUpdateId" name="id" th:value="${userUpdate.id}">
     <label>Name</label>
     <input type="text" name="name" th:value="${userUpdate.name}">
 

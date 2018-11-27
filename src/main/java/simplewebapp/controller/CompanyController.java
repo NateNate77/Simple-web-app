@@ -58,6 +58,11 @@ public class CompanyController {
         Company companyUpdate = companyDAO.getCompanyForUpdate(id);
         model.addAttribute("companyUpdate", companyUpdate);
         List<Company> companyList = companyDAO.getCompanies();
+        for (int i = 0; i<companyList.size(); i++){
+            if(String.valueOf(companyList.get(i).getId()).equals(id)){
+                companyList.remove(i);
+            }
+        }
         model.addAttribute("companyList", companyList);
 
         return "updateCompany.html";
@@ -67,15 +72,28 @@ public class CompanyController {
 
 
     @RequestMapping(value="/update-company", method=RequestMethod.POST)
-    public String updateCompany(@RequestParam(value="name") String name, @RequestParam(value="headCompanyId") String headCompanyId, @RequestParam(value="id") String id) {
+    public String updateCompany(@RequestParam(value="name") String name, @RequestParam(value="headCompanyId") String headCompanyId, @RequestParam(value="id") String id, Model model) {
 
         if(headCompanyId.equals("")){
             headCompanyId = "null";
         }
-        companyDAO.updateCompany(name, headCompanyId, id);
-
-        return "redirect:/company";
-
+        try {
+            companyDAO.updateCompany(name, headCompanyId, id);
+            return "redirect:/company";
+        }
+        catch (Exception e){
+            model.addAttribute("logError", e.getMessage());
+            Company companyUpdate = companyDAO.getCompanyForUpdate(id);
+            model.addAttribute("companyUpdate", companyUpdate);
+            List<Company> companyList = companyDAO.getCompanies();
+            for (int i = 0; i<companyList.size(); i++){
+                if(String.valueOf(companyList.get(i).getId()).equals(id)){
+                    companyList.remove(i);
+                }
+            }
+            model.addAttribute("companyList", companyList);
+        }
+        return "updateCompany";
     }
 
     @RequestMapping(value="/delete-company", method=RequestMethod.POST)

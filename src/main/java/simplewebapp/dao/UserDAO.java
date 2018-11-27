@@ -55,11 +55,16 @@ public class UserDAO extends JdbcDaoSupport {
         this.getJdbcTemplate().update(sql);
     }
 
-    public List<User> getUsersByCompany(String companyId){
+    public List<User> getUsersByCompany(String companyId, String id){
         String sql = UserMapper.BASE_SQL + " WHERE Users.\"CompanyID\" =" + companyId + ";";
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
        List<User> listUsersByCompany = this.getJdbcTemplate().query(sql, params, mapper);
+       for (int i = 0; i<listUsersByCompany.size(); i++){
+           if(String.valueOf(listUsersByCompany.get(i).getId()).equals(id)){
+               listUsersByCompany.remove(i);
+           }
+       }
        return listUsersByCompany;
 
     }
@@ -82,9 +87,13 @@ public class UserDAO extends JdbcDaoSupport {
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
         List<User> user = this.getJdbcTemplate().query(sqlWhereIdIsBoss, params, mapper);
-        if(user.size()>0){
+        if(!String.valueOf(getUserForUpdate(id).getCompanyId()).equals(companyId) && user.size()>0){
 
             throw new Exception("Пользователь не может быть перемещен в другую организацию, так как у него есть подчиненные");
+        }
+
+        if(bossId.equals(id)){
+            throw new Exception("Нельзя устанавливать руководителем самого себя");
         }
         String sql = String.format(UserMapper.updateUserSQL, name, bossId, companyId, id);
         this.getJdbcTemplate().update(sql);

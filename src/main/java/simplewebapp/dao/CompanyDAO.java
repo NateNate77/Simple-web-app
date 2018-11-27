@@ -53,10 +53,13 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     }
 
-    public void updateCompany(String name, String headCompanyId, String id){
+    public void updateCompany(String name, String headCompanyId, String id) throws Exception {
+
+        if(headCompanyId.equals(id)){
+            throw new Exception("Нельзя устанавливать головной организацией саму себя");
+        }
         String sql = String.format(CompanyMapper.updateSQL, name, headCompanyId, id);
         this.getJdbcTemplate().update(sql);
-
     }
 
     public void deleteCompany(String id) throws Exception {

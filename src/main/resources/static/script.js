@@ -12,7 +12,7 @@ function getUsersByCompany(companyId, userId){
     $.ajax({
         type: "POST",
         url: "/get-users-by-company",
-        data: "companyId=" + companyId,
+        data: "companyId=" + companyId +"&id="+ $('#userUpdateId').val(),
         success: function(msg){
             var mas = eval(msg);
             var el = document.getElementById('bossId');
