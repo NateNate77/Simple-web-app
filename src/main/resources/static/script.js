@@ -5,9 +5,10 @@ document.head.appendChild(script);
 
 window.onload = function () {
     document.getElementById('companyId').onchange();
+     // document.getElementById('bossId').onchange();
 };
 
-function getUsersByCompany(companyId){
+function getUsersByCompany(companyId, userId){
     $.ajax({
         type: "POST",
         url: "/get-users-by-company",
@@ -24,12 +25,19 @@ function getUsersByCompany(companyId){
             el.appendChild(optNull);
 
             for(var i=0;i<mas.length;i++){
+
                 var opt = document.createElement("option");
                 opt.text=mas[i].name;
                 opt.value = mas[i].id;
                 el.appendChild(opt);
 
+                if(userId == mas[i].id){
+                    opt.selected = true;
+
+                }
+
             }
+
 
 
         }

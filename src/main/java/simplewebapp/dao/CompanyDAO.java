@@ -45,7 +45,6 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     public Company getCompanyForUpdate(String id){
         String sqlWhere = " WHERE Companies.\"ID\" =" + id;
-//        String sql = CompanyMapper.BASE_SQL + " WHERE Companies.\"ID\" =" + id + ";";
         String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         CompanyMapper mapper = new CompanyMapper();
@@ -62,22 +61,34 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     public void deleteCompany(String id) throws Exception {
         String sqlWhere = " WHERE Companies.\"HeadCompanyID\" =" + id;
+
         String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         CompanyMapper mapper = new CompanyMapper();
-        List<Company> user = this.getJdbcTemplate().query(sql, params, mapper);
-        if(user.size()>0){
-            throw new Exception("Оргнизация не может быть удалена, тк у нее есть дочерние организации");
+        List<Company> companies = this.getJdbcTemplate().query(sql, params, mapper);
+
+        if(companies.size()>0){
+            throw new Exception("Организация не может быть удалена, так как у нее есть дочерние организации");
         }
-        else {
+
+            String sqlWhereId = " WHERE Companies.\"ID\" =" + id;
+            String sqlForDelete = String.format(CompanyMapper.BASE_SQL, sqlWhereId);
+            Object[] params2 = new Object[] {};
+            CompanyMapper mapper2 = new CompanyMapper();
+            List<Company> companiesForDelete = this.getJdbcTemplate().query(sqlForDelete, params2, mapper2);
+            // проверяем только первый элемент списка, так как id уникальный для каждой организации
+            if(companiesForDelete.get(0).getUsersCount()>0){
+                throw new Exception("Организация не может быть удалена, так как у нее есть сотрудники");
+            }
             String deleteFromSql = String.format(CompanyMapper.deleteCompanySQL, id);
             this.getJdbcTemplate().update(deleteFromSql);
-        }
+
 
     }
 
     public List<Company> findCompanies(String name) {
-        String sqlWhere = " WHERE Companies.\"Name\" ilike \'%" + name + "%\'";
+        String findName = name.trim();
+        String sqlWhere = " WHERE Companies.\"Name\" ilike \'%" + findName + "%\'";
         String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
 
         Object[] params = new Object[] {};

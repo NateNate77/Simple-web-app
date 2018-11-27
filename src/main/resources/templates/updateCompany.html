@@ -19,7 +19,8 @@
         <option value=""></option>
         <option th:each="company : ${companyList}"
                 th:value="${company.id}"
-                th:text="${company.name}"/>
+                th:text="${company.name}"
+                th:selected="${companyUpdate.headCompanyId==company.id}"/>
     </select>
     <input type="submit" value="Update">
 </form>

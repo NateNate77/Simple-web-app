@@ -80,7 +80,7 @@ public class CompanyController {
 
     @RequestMapping(value="/delete-company", method=RequestMethod.POST)
     @ResponseBody
-    public String deleteUser(@RequestParam(value="id") String id) throws Exception {
+    public String deleteCompany(@RequestParam(value="id") String id) throws Exception {
 
         companyDAO.deleteCompany(id);
         return "Success";

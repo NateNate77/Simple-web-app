@@ -67,7 +67,7 @@ public class UserController {
 
     @RequestMapping(value = "/update-user", method=RequestMethod.GET)
  //   @ResponseBody
-    public String updateCompany (Model model, @RequestParam(value="id") String id) {
+    public String updateCompany (Model model, @RequestParam(value="id") String id) throws Exception {
 
         User userUpdate = userDAO.getUserForUpdate(id);
         model.addAttribute("userUpdate", userUpdate);
@@ -79,12 +79,23 @@ public class UserController {
     }
 
     @RequestMapping(value="/update-user", method=RequestMethod.POST)
-    public String updateUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId, @RequestParam(value="id") String id) {
+    public String updateUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId, @RequestParam(value="id") String id, Model model) {
         if(bossId.equals("")){
             bossId = "null";
         }
-        userDAO.updateUser(name, bossId, companyId, id);
-        return "redirect:/";
+        try{
+            userDAO.updateUser(name, bossId, companyId, id);
+            return "redirect:/";
+        }
+        catch (Exception e){
+            model.addAttribute("logError", e.getMessage());
+            User userUpdate = userDAO.getUserForUpdate(id);
+            model.addAttribute("userUpdate", userUpdate);
+            List<Company> companyList = companyDAO.getCompanies();
+            model.addAttribute("companyList", companyList);
+
+        }
+         return "updateUser";
     }
 
     @RequestMapping(value="/delete-user", method=RequestMethod.POST)
@@ -117,8 +128,6 @@ public class UserController {
 
     public List<UserTree> userTree(List<User> userList, List<User> bossList){
         List<UserTree> userTreeList = new ArrayList<>();
-
-
 
         for (int j = 0; j<bossList.size(); j++){
             UserTree userTree = new UserTree();

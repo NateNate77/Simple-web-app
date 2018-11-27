@@ -7,6 +7,9 @@
 </head>
 <body>
 <form action="/update-user" method="POST">
+
+    <span th:if="${logError != null}" class="error" th:text="${logError}"></span>
+
     <h3>Измените данные</h3>
 
     <input hidden name="id" th:value="${userUpdate.id}">
@@ -14,7 +17,7 @@
     <input type="text" name="name" th:value="${userUpdate.name}">
 
 
-    <select class="form-control" onchange =getUsersByCompany(this.value) name="companyId" id="companyId" >
+    <select class="form-control" th:onchange ="'getUsersByCompany(this.value, \'' + ${userUpdate.bossId} + '\');'" name="companyId" id="companyId" >
         <option th:each="company : ${companyList}"
                 th:value="${company.id}"
                 th:text="${company.name}"
