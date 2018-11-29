@@ -1,10 +1,13 @@
-var script = document.createElement('script');
-script.type = 'text/javascript';
-script.src = 'http://code.jquery.com/jquery-1.8.3.js';
-document.head.appendChild(script);
+// var script = document.createElement('script');
+// script.type = 'text/javascript';
+// script.src = 'http://code.jquery.com/jquery-1.8.3.js';
+// document.head.appendChild(script);
 
 window.onload = function () {
-    document.getElementById('companyId').onchange();
+   var company = $('#companyId');
+   if(company.length>0){
+       company[0].onchange();
+   }
      // document.getElementById('bossId').onchange();
 };
 
@@ -74,6 +77,29 @@ function deleteCompany(id) {
 
 }
 
+$(document).ready(function() {
+    changePageAndSize();
+});
+function changePageAndSize() {
+    $('#pageSizeSelect').change(function(evt) {
+        window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1";
+
+    });
+}
+//
+// function searchUsers(){
+//     var searchUser = $('#search');
+//     $.ajax({
+//         type: "GET",
+//         url: "/",
+//         data: "name=" + searchUser.val(),
+//         success: function (data) {
+//             $("html").empty();
+//             $("html").append(data);
+//
+//         }
+//     });
+// }
 
 
 

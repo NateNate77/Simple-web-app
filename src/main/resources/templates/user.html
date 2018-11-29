@@ -13,6 +13,13 @@
 <head>
   <title>Users</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script src="script.js" defer></script>
+  <script src="jquery-3.3.1.min.js"></script>
+
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous"></link>
 
     <style>
       table {
@@ -30,18 +37,32 @@
       tr:nth-child(even) {
         background-color: #dddddd;
       }
+
+      .pagination-centered {
+        text-align: center;
+      }
+      .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+      .pointer-disabled {
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
   <div th:insert="~{layout :: header}"></div>
 
-<form action="/find-user" method="POST">
-  <input type="text" name="name">
+<form action="/" method="GET">
+  <input id="search" type="text" name="name">
+  <input hidden name="pageSize" th:value="${selectedPageSize}">
   <input type="submit" value="Поиск сотрудника">
+
 </form>
 
-  <form action="/find-company" method="POST">
+  <form action="/" method="GET">
     <input type="text" name="companyName">
+    <input hidden name="pageSize" th:value="${selectedPageSize}">
     <input type="submit" value="Поиск сотрудника по организации">
   </form>
 
@@ -63,7 +84,55 @@
 
   </table>
 
+  <div class="row">
+    <div class="form-group col-md-1">
+      <select class="form-control pagination" id="pageSizeSelect">
+        <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
+                th:value="${pageSize}"
+                th:selected="${pageSize} == ${selectedPageSize}"></option>
+      </select>
+    </div>
+    <div th:if="${totalPages != 1}"
+         class="form-group col-md-11 pagination-centered">
+      <ul class="pagination">
+        <li th:class="${currentPage-1 == 0} ? disabled"><a
+                class="pageLink"
+                th:href="@{/(pageSize=${selectedPageSize}, page=1)}">«</a>
+        </li>
+        <li th:class="${currentPage-1 == 0} ? disabled"><a
+                class="pageLink"
+                th:href="@{/(pageSize=${selectedPageSize}, page=${currentPage-1})}">←</a>
+        </li>
+        <li
+                th:class="${currentPage-1 == (page - 1)} ? 'active pointer-disabled'"
+                th:each="page : ${#numbers.sequence(currentPage < 2  ? 1 : currentPage-1 , currentPage+1>totalPages ?  totalPages : currentPage+1)}"
+                >
+          <a class="pageLink"
+             th:href="@{/(pageSize=${selectedPageSize}, page=${page})}"
+             th:text="${page}"></a>
+        </li>
+        <li
+                th:class="${currentPage == totalPages} ? disabled">
+          <a class="pageLink"
+             th:href="@{/(pageSize=${selectedPageSize}, page=${currentPage + 1})}">→</a>
+        </li>
+        <li
+                th:class="${currentPage == totalPages} ? disabled">
+          <a class="pageLink"
+             th:href="@{/(pageSize=${selectedPageSize}, page=${totalPages})}">»</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
   <button onclick="location.href='/add-new-user'">Create</button>
+
+
+  <script
+          src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+          integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+          crossorigin="anonymous"></script>
 
   </body>
 </html>

@@ -1,6 +1,5 @@
 package simplewebapp.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,12 +12,11 @@ import simplewebapp.dao.UserDAO;
 import simplewebapp.domain.Company;
 import simplewebapp.domain.User;
 import simplewebapp.domain.UserTree;
-import simplewebapp.repository.UserRepository;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -26,17 +24,45 @@ import java.util.List;
  */
 @Controller
 public class UserController {
+
     @Autowired
     private UserDAO userDAO;
     @Autowired
     private CompanyDAO companyDAO;
+    private static final int[] pageSizes = {5, 10};
 
     @RequestMapping(value="/", method= RequestMethod.GET)
-    public String getUserPage(Model model) {
-        List<User> userList = userDAO.getUsers();
-        model.addAttribute("userList", userList);
+    public String getUserPage(Model model, Optional<Integer> pageSize, Optional<Integer> page, Optional<String> name, Optional<String> companyName) {
+       List<User> userList;
+        if(name.isPresent()){
+          userList = userDAO.findUser(name.get());
+       }
+       else if(companyName.isPresent()){
+           userList = userDAO.findCompany(companyName.get());
+       }
+       else {
+           userList = userDAO.getUsers();
+       }
+
+        List<User> pageUserList = new ArrayList<>();
+
+        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
+        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
+        for(int i = (pageInt-1)*pageSizeInt; i<userList.size() && i< pageInt*pageSizeInt; i++){
+            pageUserList.add(userList.get(i));
+        }
+        double totalPagesDouble = Math.ceil((double) userList.size()/pageSizeInt);
+
+        int totalPages = (int) totalPagesDouble;
+
+        model.addAttribute("userList", pageUserList);
+        model.addAttribute("selectedPageSize", pageSizeInt);
+        model.addAttribute("currentPage", pageInt);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("pageSizes", pageSizes);
         return "user.html";
     }
+
 
     @RequestMapping(value = "/add-new-user", method=RequestMethod.GET)
     public String addNewUserPage(Model model) {
@@ -156,19 +182,52 @@ public class UserController {
         return userTree;
     }
 
-
-    @RequestMapping(value="/find-user", method=RequestMethod.POST)
-    public String findUser(Model model, @RequestParam(value="name") String name) {
-        List<User> findUserList = userDAO.findUser(name);
-        model.addAttribute("userList", findUserList);
-        return "user.html";
-    }
-
-    @RequestMapping(value="/find-company", method=RequestMethod.POST)
-    public String findCompany(Model model, @RequestParam(value="companyName") String companyName) {
-        List<User> findCompanyList = userDAO.findCompany(companyName);
-        model.addAttribute("userList", findCompanyList);
-        return "user.html";
-    }
+//
+//    @RequestMapping(value="/find-user", method=RequestMethod.POST)
+//    public String findUser(Model model, @RequestParam(value="name") String name, Optional<Integer> pageSize, Optional<Integer> page) {
+//        List<User> findUserList = userDAO.findUser(name);
+//
+//        List<User> pageUserList = new ArrayList<>();
+//
+//        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
+//        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
+//        for(int i = (pageInt-1)*pageSizeInt; i<findUserList.size() && i< pageInt*pageSizeInt; i++){
+//            pageUserList.add(findUserList.get(i));
+//        }
+//        double totalPagesDouble = Math.ceil((double) findUserList.size()/pageSizeInt);
+//
+//        int totalPages = (int) totalPagesDouble;
+//
+//        model.addAttribute("userList", pageUserList);
+//        model.addAttribute("selectedPageSize", pageSizeInt);
+//        model.addAttribute("currentPage", pageInt);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("pageSizes", pageSizes);
+//
+//        return "user.html";
+//    }
+//
+//    @RequestMapping(value="/find-company", method=RequestMethod.POST)
+//    public String findCompany(Model model, @RequestParam(value="companyName") String companyName, Optional<Integer> pageSize, Optional<Integer> page) {
+//        List<User> findCompanyList = userDAO.findCompany(companyName);
+////        model.addAttribute("userList", findCompanyList);
+//        List<User> pageUserList = new ArrayList<>();
+//
+//        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
+//        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
+//        for(int i = (pageInt-1)*pageSizeInt; i<findCompanyList.size() && i< pageInt*pageSizeInt; i++){
+//            pageUserList.add(findCompanyList.get(i));
+//        }
+//        double totalPagesDouble = Math.ceil((double) findCompanyList.size()/pageSizeInt);
+//
+//        int totalPages = (int) totalPagesDouble;
+//
+//        model.addAttribute("userList", pageUserList);
+//        model.addAttribute("selectedPageSize", pageSizeInt);
+//        model.addAttribute("currentPage", pageInt);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("pageSizes", pageSizes);
+//        return "user.html";
+//    }
 
 }

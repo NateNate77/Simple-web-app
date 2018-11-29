@@ -16,6 +16,7 @@ import simplewebapp.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Admin on 17.11.2018.
@@ -25,11 +26,36 @@ public class CompanyController {
 
     @Autowired
     private CompanyDAO companyDAO;
+    private static final int[] pageSizes = {5, 10};
 
     @RequestMapping(value="/company", method= RequestMethod.GET)
-    public String getCompanyPage(Model model) {
-        List<Company> companyList = companyDAO.getCompanies();
-        model.addAttribute("companyList", companyList);
+    public String getCompanyPage(Model model, Optional<Integer> pageSize, Optional<Integer> page, Optional<String> nameCompany) {
+//        List<Company> companyList = companyDAO.getCompanies();
+        List<Company> companyList;
+//        model.addAttribute("companyList", companyList);
+        if(nameCompany.isPresent()){
+            companyList = companyDAO.findCompanies(nameCompany.get());
+        }
+        else {
+            companyList = companyDAO.getCompanies();
+        }
+
+        List<Company> pageCompanyList = new ArrayList<>();
+
+        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
+        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
+        for(int i = (pageInt-1)*pageSizeInt; i<companyList.size() && i< pageInt*pageSizeInt; i++){
+            pageCompanyList.add(companyList.get(i));
+        }
+        double totalPagesDouble = Math.ceil((double) companyList.size()/pageSizeInt);
+
+        int totalPages = (int) totalPagesDouble;
+
+        model.addAttribute("companyList", pageCompanyList);
+        model.addAttribute("selectedPageSize", pageSizeInt);
+        model.addAttribute("currentPage", pageInt);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("pageSizes", pageSizes);
         return "company.html";
     }
 
@@ -152,11 +178,11 @@ public class CompanyController {
         return companyTree;
     }
 
-    @RequestMapping(value="/find-companies", method=RequestMethod.POST)
-    public String findCompanies(Model model, @RequestParam(value="name") String name) {
-        List<Company> findCompaniesList = companyDAO.findCompanies(name);
-        model.addAttribute("companyList", findCompaniesList);
-        return "company.html";
-    }
+//    @RequestMapping(value="/find-companies", method=RequestMethod.POST)
+//    public String findCompanies(Model model, @RequestParam(value="name") String name) {
+//        List<Company> findCompaniesList = companyDAO.findCompanies(name);
+//        model.addAttribute("companyList", findCompaniesList);
+//        return "company.html";
+//    }
 
 }
