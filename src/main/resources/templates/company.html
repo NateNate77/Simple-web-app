@@ -45,9 +45,10 @@
 <div th:insert="~{layout :: header}"></div>
 
 <form action="/company" method="GET">
-    <input type="text" name="nameCompany">
+    <label>Название организации</label>
+    <input id="searchCompany" type="text" name="nameCompany" th:value="${nameCompany}">
     <input hidden name="pageSize" th:value="${selectedPageSize}">
-    <input type="submit" value="Найти организацию">
+    <input type="submit" value="Найти">
 </form>
 
 <table>
@@ -74,34 +75,38 @@
                     th:selected="${pageSize} == ${selectedPageSize}"></option>
         </select>
     </div>
-    <div th:if="${totalPages != 1}"
+    <div th:if="${totalPages > 1}"
          class="form-group col-md-11 pagination-centered">
         <ul class="pagination">
             <li th:class="${currentPage-1 == 0} ? disabled"><a
                     class="pageLink"
-                    th:href="@{/company(pageSize=${selectedPageSize}, page=1)}">«</a>
+                    th:href="'/company?pageSize=' + ${selectedPageSize} + '&amp;page=1' + ${nameCompany != null ? '&amp;nameCompany=' + nameCompany : ''}">«</a>
+
             </li>
             <li th:class="${currentPage-1 == 0} ? disabled"><a
                     class="pageLink"
-                    th:href="@{/company(pageSize=${selectedPageSize}, page=${currentPage-1})}">←</a>
+                    th:href="'/company?pageSize=' +${selectedPageSize} + '&amp;page=' + ${currentPage-1} + ${nameCompany != null ? '&amp;nameCompany=' + nameCompany : ''}">←</a>
+
             </li>
             <li
                     th:class="${currentPage-1 == (page - 1)} ? 'active pointer-disabled'"
                     th:each="page : ${#numbers.sequence(currentPage < 2  ? 1 : currentPage-1 , currentPage+1>totalPages ?  totalPages : currentPage+1)}"
             >
                 <a class="pageLink"
-                   th:href="@{/company(pageSize=${selectedPageSize}, page=${page})}"
+                   th:href="'/company?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${page} + ${nameCompany != null ? '&amp;nameCompany=' + nameCompany : ''}"
                    th:text="${page}"></a>
             </li>
             <li
                     th:class="${currentPage == totalPages} ? disabled">
                 <a class="pageLink"
-                   th:href="@{/company(pageSize=${selectedPageSize}, page=${currentPage + 1})}">→</a>
+                   th:href="'/company?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${currentPage + 1} + ${nameCompany != null ?  '&amp;nameCompany=' + nameCompany : ''}">→</a>
+
             </li>
             <li
                     th:class="${currentPage == totalPages} ? disabled">
                 <a class="pageLink"
-                   th:href="@{/company(pageSize=${selectedPageSize}, page=${totalPages})}">»</a>
+                   th:href="'/company?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${totalPages} + ${nameCompany != null ?  '&amp;nameCompany=' + nameCompany : ''}">»</a>
+
             </li>
         </ul>
     </div>
@@ -113,6 +118,7 @@
         src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+
 
 </body>
 </html>

@@ -129,4 +129,17 @@ public class UserDAO extends JdbcDaoSupport {
         }
     }
 
+    public List<User> findUserByCompany(String name, String nameByCompany){
+        String findName = name.trim();
+        String findNameByCompany = nameByCompany.trim();
+
+        String sql = UserMapper.BASE_SQL + " WHERE Users.\"Name\" ilike \'%" + findName + "%\'" + " AND Companies.\"Name\" ilike \'%" + findNameByCompany + "%\'";
+
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+
+        List findUserByCompany = this.getJdbcTemplate().query(sql, params, mapper);
+        return findUserByCompany;
+    }
+
 }

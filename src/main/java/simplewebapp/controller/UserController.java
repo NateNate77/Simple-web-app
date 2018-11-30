@@ -32,13 +32,20 @@ public class UserController {
     private static final int[] pageSizes = {5, 10};
 
     @RequestMapping(value="/", method= RequestMethod.GET)
-    public String getUserPage(Model model, Optional<Integer> pageSize, Optional<Integer> page, Optional<String> name, Optional<String> companyName) {
+    public String getUserPage(Model model, Optional<Integer> pageSize, Optional<Integer> page, Optional<String> name, Optional<String> nameByCompany) {
        List<User> userList;
-        if(name.isPresent()){
-          userList = userDAO.findUser(name.get());
+       if(name.isPresent() && nameByCompany.isPresent()){
+           userList = userDAO.findUserByCompany(name.get(), nameByCompany.get());
+           model.addAttribute("name", name.get());
+           model.addAttribute("nameByCompany", nameByCompany.get());
        }
-       else if(companyName.isPresent()){
-           userList = userDAO.findCompany(companyName.get());
+       else if(name.isPresent()){
+          userList = userDAO.findUser(name.get());
+          model.addAttribute("name", name.get());
+       }
+       else if(nameByCompany.isPresent()){
+           userList = userDAO.findCompany(nameByCompany.get());
+           model.addAttribute("nameByCompany", nameByCompany.get());
        }
        else {
            userList = userDAO.getUsers();
@@ -92,14 +99,12 @@ public class UserController {
 
 
     @RequestMapping(value = "/update-user", method=RequestMethod.GET)
- //   @ResponseBody
     public String updateCompany (Model model, @RequestParam(value="id") String id) throws Exception {
 
         User userUpdate = userDAO.getUserForUpdate(id);
         model.addAttribute("userUpdate", userUpdate);
         List<Company> companyList = companyDAO.getCompanies();
         model.addAttribute("companyList", companyList);
-//        List<User> usersByCompany = userDAO.getUsersByCompany(companyId);
 
         return "updateUser.html";
     }
@@ -181,53 +186,5 @@ public class UserController {
 
         return userTree;
     }
-
-//
-//    @RequestMapping(value="/find-user", method=RequestMethod.POST)
-//    public String findUser(Model model, @RequestParam(value="name") String name, Optional<Integer> pageSize, Optional<Integer> page) {
-//        List<User> findUserList = userDAO.findUser(name);
-//
-//        List<User> pageUserList = new ArrayList<>();
-//
-//        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
-//        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
-//        for(int i = (pageInt-1)*pageSizeInt; i<findUserList.size() && i< pageInt*pageSizeInt; i++){
-//            pageUserList.add(findUserList.get(i));
-//        }
-//        double totalPagesDouble = Math.ceil((double) findUserList.size()/pageSizeInt);
-//
-//        int totalPages = (int) totalPagesDouble;
-//
-//        model.addAttribute("userList", pageUserList);
-//        model.addAttribute("selectedPageSize", pageSizeInt);
-//        model.addAttribute("currentPage", pageInt);
-//        model.addAttribute("totalPages", totalPages);
-//        model.addAttribute("pageSizes", pageSizes);
-//
-//        return "user.html";
-//    }
-//
-//    @RequestMapping(value="/find-company", method=RequestMethod.POST)
-//    public String findCompany(Model model, @RequestParam(value="companyName") String companyName, Optional<Integer> pageSize, Optional<Integer> page) {
-//        List<User> findCompanyList = userDAO.findCompany(companyName);
-////        model.addAttribute("userList", findCompanyList);
-//        List<User> pageUserList = new ArrayList<>();
-//
-//        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
-//        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
-//        for(int i = (pageInt-1)*pageSizeInt; i<findCompanyList.size() && i< pageInt*pageSizeInt; i++){
-//            pageUserList.add(findCompanyList.get(i));
-//        }
-//        double totalPagesDouble = Math.ceil((double) findCompanyList.size()/pageSizeInt);
-//
-//        int totalPages = (int) totalPagesDouble;
-//
-//        model.addAttribute("userList", pageUserList);
-//        model.addAttribute("selectedPageSize", pageSizeInt);
-//        model.addAttribute("currentPage", pageInt);
-//        model.addAttribute("totalPages", totalPages);
-//        model.addAttribute("pageSizes", pageSizes);
-//        return "user.html";
-//    }
 
 }

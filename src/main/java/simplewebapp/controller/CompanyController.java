@@ -30,11 +30,12 @@ public class CompanyController {
 
     @RequestMapping(value="/company", method= RequestMethod.GET)
     public String getCompanyPage(Model model, Optional<Integer> pageSize, Optional<Integer> page, Optional<String> nameCompany) {
-//        List<Company> companyList = companyDAO.getCompanies();
+
         List<Company> companyList;
-//        model.addAttribute("companyList", companyList);
+
         if(nameCompany.isPresent()){
             companyList = companyDAO.findCompanies(nameCompany.get());
+            model.addAttribute("nameCompany",nameCompany.get());
         }
         else {
             companyList = companyDAO.getCompanies();
@@ -177,12 +178,5 @@ public class CompanyController {
 
         return companyTree;
     }
-
-//    @RequestMapping(value="/find-companies", method=RequestMethod.POST)
-//    public String findCompanies(Model model, @RequestParam(value="name") String name) {
-//        List<Company> findCompaniesList = companyDAO.findCompanies(name);
-//        model.addAttribute("companyList", findCompaniesList);
-//        return "company.html";
-//    }
 
 }

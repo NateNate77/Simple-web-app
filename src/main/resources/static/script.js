@@ -78,28 +78,46 @@ function deleteCompany(id) {
 }
 
 $(document).ready(function() {
+
     changePageAndSize();
 });
 function changePageAndSize() {
     $('#pageSizeSelect').change(function(evt) {
-        window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1";
+        var url_string = window.location.href;
+        var url = new URL(url_string);
+        var nameCompany = url.searchParams.get("nameCompany");
+        var name = url.searchParams.get("name");
+        var nameByCompany = url.searchParams.get("nameByCompany");
+        if(name==null && nameCompany==null && nameByCompany==null){
+            window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1";
+        }
+        else if(nameCompany!=null) {
+            window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1" + "&nameCompany=" + nameCompany;
+        }
+        else if(name!=null && nameByCompany!= null){
+            window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1" + "&name=" + name + "&nameByCompany=" + nameByCompany;
+        }
+        else if(name!=null){
+            window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1" + "&name=" + name;
+        }
+        else if(nameByCompany!=null){
+            window.location.href = window.location.href.split('?')[0] + "?pageSize=" + this.value + "&page=1" + "&nameByCompany=" + nameByCompany;
+        }
+
+
 
     });
 }
-//
-// function searchUsers(){
-//     var searchUser = $('#search');
-//     $.ajax({
-//         type: "GET",
-//         url: "/",
-//         data: "name=" + searchUser.val(),
-//         success: function (data) {
-//             $("html").empty();
-//             $("html").append(data);
-//
-//         }
-//     });
-// }
+
+var toggler = document.getElementsByClassName("myCaret");
+var i;
+
+for (i = 0; i < toggler.length; i++) {
+    toggler[i].addEventListener("click", function() {
+        this.parentElement.querySelector(".myNested").classList.toggle("active");
+        this.classList.toggle("myCaret-down");
+    });
+}
 
 
 

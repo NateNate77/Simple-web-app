@@ -10,7 +10,7 @@ import java.sql.SQLException;
  * Created by Admin on 18.11.2018.
  */
 public class UserMapper implements RowMapper<User> {
-//"Select * From \"Staff\"";
+
     public static final String BASE_SQL //
             = "SELECT Users.\"ID\", Users.\"Name\", Users.\"BossID\", Users.\"CompanyID\", Companies.\"Name\" as \"CompanyName\", Boss.\"Name\" as \"BossName\"\n" +
             "\tFROM public.\"Staff\" as Users\n" +
