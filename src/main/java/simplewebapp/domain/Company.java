@@ -4,7 +4,7 @@ package simplewebapp.domain;
  * Created by Admin on 17.11.2018.
  */
 public class Company {
-    // id, name, headCompanyId
+
 
     private int id;
     private String name;

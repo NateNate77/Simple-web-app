@@ -1,14 +1,11 @@
-// var script = document.createElement('script');
-// script.type = 'text/javascript';
-// script.src = 'http://code.jquery.com/jquery-1.8.3.js';
-// document.head.appendChild(script);
+
 
 window.onload = function () {
    var company = $('#companyId');
    if(company.length>0){
        company[0].onchange();
    }
-     // document.getElementById('bossId').onchange();
+
 };
 
 function getUsersByCompany(companyId, userId){

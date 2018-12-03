@@ -89,7 +89,7 @@ public class UserDAO extends JdbcDaoSupport {
         List<User> user = this.getJdbcTemplate().query(sqlWhereIdIsBoss, params, mapper);
         if(!String.valueOf(getUserForUpdate(id).getCompanyId()).equals(companyId) && user.size()>0){
 
-            throw new Exception("Пользователь не может быть перемещен в другую организацию, так как у него есть подчиненные");
+            throw new Exception("Сотрудник не может быть перемещен в другую организацию, так как у него есть подчиненные");
         }
 
         if(bossId.equals(id)){

@@ -4,7 +4,7 @@ package simplewebapp.domain;
  * Created by Admin on 17.11.2018.
  */
 public class User {
-    // id, name, companyId, bossId
+
     private int id;
     private String name;
     private int companyId;

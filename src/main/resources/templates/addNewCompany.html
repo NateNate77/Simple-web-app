@@ -1,28 +1,51 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Users</title>
+    <title>Create Company</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="script.js" defer></script>
     <script src="jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel = "stylesheet" href = "site.css">
 </head>
 <body class="w3-light-grey">
 
 <form action="/add-new-company" method="POST">
-    <label>Name</label>
-    <input type="text" name="name">
-    <!--<label>Head Company Name</label>-->
-    <!--<input type="text" name="headCompanyId">-->
 
+    <div class="w3-container w3-blue-grey w3-opacity w3-center">
+        <h3>Введите данные</h3>
+    </div>
 
-    <select class="form-control" name="headCompanyId" id="headCompanyId">
-        <option value=""></option>
-        <option th:each="company : ${companyList}"
+    <div class="w3-card-4">
+       <div>
+          <label class="font-update-name">Организация</label>
+       </div>
+
+        <div>
+            <input  class="w3-inputUpdate w3-border w3-round-large" type="text" name="name">
+        </div>
+
+        <div>
+            <label  class="font-update">Головная организация</label>
+        </div>
+
+    <div>
+        <select class="form-control" style="width: 20%" name="headCompanyId" id="headCompanyId">
+            <option value=""></option>
+            <option th:each="company : ${companyList}"
                 th:value="${company.id}"
                 th:text="${company.name}"/>
-    </select>
-    <input type="submit" value="Ok">
+        </select>
+    </div>
+
+        <div class="checkbox-create">
+            <div  class="checkbox-inline">
+                <input class="w3-btn w3-green w3-round-large" type="submit" value="Добавить">
+            </div>
+        </div>
+    </div>
 </form>
 
 </body>
