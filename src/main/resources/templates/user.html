@@ -20,6 +20,8 @@
         href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
         crossorigin="anonymous"></link>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel = "stylesheet" href = "site.css">
 
     <style>
       table {
@@ -50,18 +52,31 @@
       }
     </style>
   </head>
-  <body>
+  <body class="w3-light-grey">
   <div th:insert="~{layout :: header}"></div>
 
-<form action="/" method="GET">
-  <label>Имя</label>
-  <input id="search" type="text" name="name"  th:value="${name}">
-  <input hidden name="pageSize" th:value="${selectedPageSize}">
+<div class = class="checkbox">
 
-  <label>Организация</label>
-    <input type="text" name="nameByCompany"  th:value="${nameByCompany}">
-    <input type="submit" value="Поиск">
+
+<div  class="checkbox-inline">
+
+  <form action="/" method="GET">
+    <label>Имя</label>
+    <input class="w3-input w3-border w3-round-large" id="search" type="text" name="name"  th:value="${name}">
+    <input hidden name="pageSize" th:value="${selectedPageSize}">
+
+    <label>Организация</label>
+    <input class="w3-input w3-border w3-round-large" type="text" name="nameByCompany"  th:value="${nameByCompany}">
+    <input class="w3-btn w3-green w3-round-large" type="submit" value="Поиск">
   </form>
+
+
+</div>
+
+  <div class="pull-right checkbox-inline">
+    <button class="w3-btn w3-green w3-round-large" onclick="location.href='/add-new-user'">Создать</button>
+  </div>
+  </div>
 
 
   <table>
@@ -123,7 +138,7 @@
   </div>
 
 
-  <button onclick="location.href='/add-new-user'">Create</button>
+
 
 
   <script

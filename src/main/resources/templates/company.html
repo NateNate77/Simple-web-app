@@ -10,6 +10,8 @@
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
           crossorigin="anonymous">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel = "stylesheet" href = "site.css">
 
     <style>
         table {
@@ -41,16 +43,22 @@
     </style>
 </head>
 
-<body>
+<body class="w3-light-grey">
 <div th:insert="~{layout :: header}"></div>
 
+<div class = class="checkbox">
+    <div  class="checkbox-inline">
 <form action="/company" method="GET">
     <label>Название организации</label>
-    <input id="searchCompany" type="text" name="nameCompany" th:value="${nameCompany}">
+    <input class="w3-inputForm w3-border w3-round-large"  id="searchCompany" type="text" name="nameCompany" th:value="${nameCompany}">
     <input hidden name="pageSize" th:value="${selectedPageSize}">
-    <input type="submit" value="Найти">
+    <input class="w3-btn w3-green w3-round-large" type="submit" value="Найти">
 </form>
-
+    </div>
+    <div class="pull-right checkbox-inline">
+<button  class="w3-btn w3-green w3-round-large" onclick="location.href='/add-new-company'">Создать</button>
+    </div>
+</div>
 <table>
     <tr>
         <th>ID</th>
@@ -112,7 +120,7 @@
     </div>
 </div>
 
-<button onclick="location.href='/add-new-company'">Create</button>
+
 
 <script
         src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
