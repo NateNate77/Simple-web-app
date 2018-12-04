@@ -68,15 +68,25 @@ public class CompanyController {
     }
 
     @RequestMapping(value="/add-new-company", method=RequestMethod.POST)
-    public String addNewCompany(@RequestParam(value="name") String name, @RequestParam(value="headCompanyId") String headCompanyId) {
+    public String addNewCompany(@RequestParam(value="name") String name, @RequestParam(value="headCompanyId") String headCompanyId, Model model) throws Exception {
 
         if(headCompanyId.equals("")){
             headCompanyId = "null";
         }
-          companyDAO.addCompany(name, headCompanyId);
 
-         return "redirect:/company";
+        try {
+            companyDAO.addCompany(name, headCompanyId);
 
+            return "redirect:/company";
+        }
+
+        catch (Exception e){
+            model.addAttribute("logError", e.getMessage());
+            List<Company> companyList = companyDAO.getCompanies();
+            model.addAttribute("companyList", companyList);
+        }
+
+        return "addNewCompany";
     }
 
     @RequestMapping(value = "/update-company", method=RequestMethod.GET)

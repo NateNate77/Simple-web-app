@@ -20,7 +20,8 @@ public class CompanyMapper implements RowMapper<Company> {
             "\t\t\ton Users.\"CompanyID\"=Companies.\"ID\"\n" +
             "            left join public.\"Companies\" as HeadCompany\n" +
             "            on HeadCompany.\"ID\" = Companies.\"HeadCompanyID\"\n %s" +
-            "\t\t\tGroup by Companies.\"ID\", Companies.\"Name\", Companies.\"HeadCompanyID\", HeadCompany.\"Name\"";
+            "\t\t\tGroup by Companies.\"ID\", Companies.\"Name\", Companies.\"HeadCompanyID\", HeadCompany.\"Name\"\n" +
+            "\t\t\t order by Companies.\"ID\"";
 
     public static final String insrtSQL =  "INSERT INTO public.\"Companies\" (\"Name\", \"HeadCompanyID\") VALUES (\'%s\', %s)";
 

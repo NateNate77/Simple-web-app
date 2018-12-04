@@ -17,14 +17,14 @@
     <div class="w3-container w3-blue-grey w3-opacity w3-center">
         <h3>Введите данные</h3>
     </div>
-
+    <span th:if="${logError != null}" class="error alert alert-danger" th:text="${logError}"></span>
     <div class="w3-card-4">
        <div>
           <label class="font-update-name">Организация</label>
        </div>
 
         <div>
-            <input  class="w3-inputUpdate w3-border w3-round-large" type="text" name="name">
+            <input  class="w3-inputUpdate w3-border w3-round-large" type="text" name="name"  th:required="required">
         </div>
 
         <div>

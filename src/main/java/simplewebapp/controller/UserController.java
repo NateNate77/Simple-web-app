@@ -50,7 +50,6 @@ public class UserController {
        else {
            userList = userDAO.getUsers();
        }
-
         List<User> pageUserList = new ArrayList<>();
 
         int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
@@ -81,12 +80,20 @@ public class UserController {
 
 
     @RequestMapping(value="/add-new-user", method=RequestMethod.POST)
-    public String addNewUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId) {
+    public String addNewUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId, Model model) throws Exception {
         if(bossId.equals("")){
             bossId = "null";
         }
-        userDAO.addUser(name, bossId, companyId);
-        return "redirect:/";
+        try{
+            userDAO.addUser(name, bossId, companyId);
+            return "redirect:/";
+        }
+        catch (Exception e){
+            model.addAttribute("logError", e.getMessage());
+            List<Company> companyList = companyDAO.getCompanies();
+            model.addAttribute("companyList", companyList);
+        }
+            return "addNewUser";
     }
 
 

@@ -26,7 +26,7 @@ public class UserDAO extends JdbcDaoSupport {
 
     public List<User> getUsers() {
 
-        String sql = UserMapper.BASE_SQL;
+        String sql = String.format(UserMapper.BASE_SQL,"");
 
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
@@ -37,8 +37,8 @@ public class UserDAO extends JdbcDaoSupport {
 
     public List<User> findUser(String name) {
         String findByName = name.trim();
-
-        String sql = UserMapper.BASE_SQL + " WHERE Users.\"Name\" ilike \'%" + findByName + "%\'";
+        String sqlWhere = " WHERE Users.\"Name\" ilike \'%" + findByName + "%\'";
+        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
 
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
@@ -50,13 +50,19 @@ public class UserDAO extends JdbcDaoSupport {
         }
     }
 
-    public void addUser(String name, String bossId, String companyId){
-        String sql = String.format(UserMapper.insrtSQL, name , bossId, companyId) ;
+    public void addUser(String name, String bossId, String companyId) throws Exception {
+        String nameUser = name.trim();
+        if(nameUser.isEmpty()){
+
+            throw new Exception("Введите имя");
+        }
+        String sql = String.format(UserMapper.insrtSQL, nameUser , bossId, companyId) ;
         this.getJdbcTemplate().update(sql);
     }
 
     public List<User> getUsersByCompany(String companyId, String id){
-        String sql = UserMapper.BASE_SQL + " WHERE Users.\"CompanyID\" =" + companyId + ";";
+        String sqlWhere =  " WHERE Users.\"CompanyID\" =" + companyId;
+        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
        List<User> listUsersByCompany = this.getJdbcTemplate().query(sql, params, mapper);
@@ -70,8 +76,8 @@ public class UserDAO extends JdbcDaoSupport {
     }
 
     public User getUserForUpdate(String id){
-
-            String sql = UserMapper.BASE_SQL + " WHERE Users.\"ID\" =" + id + ";";
+            String sqlWhere =  " WHERE Users.\"ID\" =" + id;
+            String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
             Object[] params = new Object[] {};
             UserMapper mapper = new UserMapper();
             List<User> user = this.getJdbcTemplate().query(sql, params, mapper);
@@ -82,11 +88,17 @@ public class UserDAO extends JdbcDaoSupport {
     }
 
     public void updateUser(String name, String bossId, String companyId, String id) throws Exception {
-
-        String sqlWhereIdIsBoss = UserMapper.BASE_SQL + " WHERE Users.\"BossID\" =" + id + ";";
+        String sqlWhere = " WHERE Users.\"BossID\" =" + id;
+        String sqlWhereIdIsBoss = String.format(UserMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
         List<User> user = this.getJdbcTemplate().query(sqlWhereIdIsBoss, params, mapper);
+        String nameUser = name.trim();
+        if(nameUser.isEmpty()){
+
+            throw new Exception("Введите имя");
+        }
+
         if(!String.valueOf(getUserForUpdate(id).getCompanyId()).equals(companyId) && user.size()>0){
 
             throw new Exception("Сотрудник не может быть перемещен в другую организацию, так как у него есть подчиненные");
@@ -95,17 +107,18 @@ public class UserDAO extends JdbcDaoSupport {
         if(bossId.equals(id)){
             throw new Exception("Нельзя устанавливать руководителем самого себя");
         }
-        String sql = String.format(UserMapper.updateUserSQL, name, bossId, companyId, id);
+        String sql = String.format(UserMapper.updateUserSQL, nameUser, bossId, companyId, id);
         this.getJdbcTemplate().update(sql);
     }
 
     public void deleteUser(String id) throws Exception {
-        String sql = UserMapper.BASE_SQL + " WHERE Users.\"BossID\" =" + id + ";";
+        String sqlWhere =  " WHERE Users.\"BossID\" =" + id;
+        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
         List<User> user = this.getJdbcTemplate().query(sql, params, mapper);
         if(user.size()>0){
-            throw new Exception("Пользователь не может быть удален, так как у него есть подчиненные");
+            throw new Exception("Сотрудник не может быть удален, так как у него есть подчиненные");
         }
         else {
             String deleteFromSql = String.format(UserMapper.deleteUserSQL, id);
@@ -116,8 +129,8 @@ public class UserDAO extends JdbcDaoSupport {
 
     public List<User> findCompany(String companyName) {
         String findByCompanyName = companyName.trim();
-
-        String sql = UserMapper.BASE_SQL + " WHERE Companies.\"Name\" ilike \'%" + findByCompanyName + "%\'";
+        String sqlWhere = " WHERE Companies.\"Name\" ilike \'%" + findByCompanyName + "%\'";
+        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
 
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
@@ -132,8 +145,8 @@ public class UserDAO extends JdbcDaoSupport {
     public List<User> findUserByCompany(String name, String nameByCompany){
         String findName = name.trim();
         String findNameByCompany = nameByCompany.trim();
-
-        String sql = UserMapper.BASE_SQL + " WHERE Users.\"Name\" ilike \'%" + findName + "%\'" + " AND Companies.\"Name\" ilike \'%" + findNameByCompany + "%\'";
+        String sqlWhere = " WHERE Users.\"Name\" ilike \'%" + findName + "%\'" + " AND Companies.\"Name\" ilike \'%" + findNameByCompany + "%\'";
+        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
 
         Object[] params = new Object[] {};
         UserMapper mapper = new UserMapper();
