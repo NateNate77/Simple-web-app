@@ -31,7 +31,7 @@
             <label  class="font-update">Организация</label>
         </div>
         <div>
-    <select class="form-control" style="width: 20%" onchange =getUsersByCompany(this.value) name="companyId" id="companyId">
+    <select class="form-control" style="width: 20%" onchange =getUsersByCompany(this.value) name="companyId" id="companyId" th:required="required">
         <option th:each="company : ${companyList}"
                 th:value="${company.id}"
                 th:text="${company.name}"/>

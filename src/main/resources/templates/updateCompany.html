@@ -50,12 +50,14 @@
                      <input class="w3-btn w3-green w3-round-large"  type="submit" value="Изменить">
                 </div>
                 <div  class="checkbox-inline">
-                    <button  class="btn btn-danger" th:onclick="'deleteCompany(\'' + ${companyUpdate.id} + '\');'">Удалить</button>
+                    <button type="button" class="btn btn-danger" th:onclick="'deleteCompany(\'' + ${companyUpdate.id} + '\');'">Удалить</button>
                 </div>
             </div>
         </div>
    </div>
 </form>
+
+
 
 
 </body>

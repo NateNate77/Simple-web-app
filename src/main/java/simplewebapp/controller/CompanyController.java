@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import simplewebapp.dao.CompanyDAO;
 import simplewebapp.domain.Company;
 import simplewebapp.domain.CompanyTree;
-import simplewebapp.domain.User;
-import simplewebapp.repository.CompanyRepository;
-import simplewebapp.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
