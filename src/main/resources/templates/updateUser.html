@@ -1,10 +1,12 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" ng-app="app">
 <head>
     <title>Update User</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="script.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.js"></script>
     <script src="jquery-3.3.1.min.js"></script>
+    <script src="app.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -14,62 +16,66 @@
 
 <div th:insert="~{layout :: header}"></div>
 
+<div ng-controller="UserUpdateCtrl">
+    <form ng-submit="updateUser()">
 
+        <div class="w3-container w3-blue-grey w3-opacity w3-center">
+            <h3>Измените данные</h3>
+        </div>
+        <span class="error alert alert-danger" id="error" style="display: none;"></span>
+        <div class="w3-card-4">
 
-<form action="/update-user" method="POST">
-
-    <div class="w3-container w3-blue-grey w3-opacity w3-center">
-    <h3>Измените данные</h3>
-    </div>
-    <span th:if="${logError != null}" class="error alert alert-danger" th:text="${logError}"></span>
-    <div class="w3-card-4">
-
-    <input hidden id="userUpdateId" name="id" th:value="${userUpdate.id}">
+            <input hidden id="userUpdateId" name="id" ng-model="userId">
             <div>
-               <label class="font-update-name">Имя</label>
+                <label class="font-update-name">Имя</label>
             </div>
-        <div>
-        <input class="w3-inputUpdate w3-border w3-round-large" type="text" name="name" th:value="${userUpdate.name}" th:required="required">
-        </div>
+            <div>
 
-        <div>
-            <label  class="font-update">Организация</label>
-        </div>
-        <div>
-    <select class="form-control" style="width: 20%" th:onchange ="'getUsersByCompany(this.value, \'' + ${userUpdate.bossId} + '\');'" name="companyId" id="companyId" >
-        <option th:each="company : ${companyList}"
-                th:value="${company.id}"
-                th:text="${company.name}"
-                th:selected="${userUpdate.companyId==company.id}"/>
-    </select>
-        </div>
+                <input class="w3-inputUpdate w3-border w3-round-large" id="nameUser" type="text" name="name" ng-model="userName">
+            </div>
 
-        <div>
-            <label  class="font-update">Руководитель</label>
+            <div>
+                <label  class="font-update">Организация</label>
+            </div>
+            <div>
 
-        </div>
+                <select class="form-control" style="width: 20%"  name="companyId" id="companyId"
 
-        <div>
-    <select class="form-control" style="width: 20%" id="bossId" name="bossId">
+                        ng-options="option as option.name for option in companiesName track by option.id"
+                        ng-model="selectedOption"
+                        ng-change="getUsersByCompany(selectedOption.id, userId)"></select>
 
-    </select>
-        </div>
+            </div>
 
-        <div class="button-margin">
-        <div class="checkbox">
-        <div  class="checkbox-inline">
-        <input class="w3-btn w3-green w3-round-large" type="submit" value="Изменить">
-        </div>
-        <div  class="checkbox-inline">
-        <button type="button" class="btn btn-danger" th:onclick="'deleteUser(\'' + ${userUpdate.id} + '\');'">Удалить</button>
-        </div>
-        </div>
-        </div>
-    </div>
+            <div>
+                <label  class="font-update">Руководитель</label>
 
-</form>
+            </div>
+
+            <div>
+                <select class="form-control" style="width: 20%" id="bossId" name="bossId"
+                        ng-options="option as option.name for option in bossList track by option.id"
+                        ng-model="selectedOptionBoss">
+                    <option value=""></option>
 
 
+                </select>
+            </div>
+
+            <div class="button-margin">
+                <div class="checkbox">
+                    <div  class="checkbox-inline">
+                        <input class="w3-btn w3-green w3-round-large" type="submit" value="Изменить">
+                    </div>
+                    <div  class="checkbox-inline">
+                        <button type="button" class="btn btn-danger" ng-click="deleteUser()">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
 
 </body>
 </html>

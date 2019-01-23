@@ -1,9 +1,12 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" ng-app="app">
 <head>
     <title>Create User</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="script.js" defer></script>
+    <!--<script src="angular.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.js"></script>
+    <script src="app.js"></script>
     <script src="jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -11,31 +14,33 @@
     <link rel = "stylesheet" href = "site.css">
 </head>
 <body class="w3-light-grey">
-
-<form action="/add-new-user" method="POST">
+<div ng-controller="AddNewUserCtrl">
+<form ng-submit="addNewUser()">
 
     <div class="w3-container w3-blue-grey w3-opacity w3-center">
         <h3>Введите данные</h3>
     </div>
-    <span th:if="${logError != null}" class="error alert alert-danger" th:text="${logError}"></span>
+    <span class="error alert alert-danger" id="error" style="display: none;"></span>
     <div class="w3-card-4">
 
         <div>
            <label  class="font-update-name">Имя</label>
         </div>
         <div>
-            <input class="w3-inputUpdate w3-border w3-round-large" type="text" name="name"  th:required="required">
+            <input class="w3-inputUpdate w3-border w3-round-large" id="nameUser" type="text" name="name"  th:required="required">
         </div>
 
         <div>
             <label  class="font-update">Организация</label>
         </div>
         <div>
-    <select class="form-control" style="width: 20%" onchange =getUsersByCompany(this.value) name="companyId" id="companyId" th:required="required">
-        <option th:each="company : ${companyList}"
-                th:value="${company.id}"
-                th:text="${company.name}"/>
-    </select>
+
+            <select class="form-control" style="width: 20%"  name="companyId" id="companyId"
+
+                    ng-options="option as option.name for option in companyList track by option.id"
+                    ng-model="selectedOption"
+                    ng-change="getUsersByCompany(selectedOption.id)"></select>
+
         </div>
 
         <div>
@@ -43,7 +48,10 @@
         </div>
 
         <div>
-            <select class="form-control" style="width: 20%" id="bossId" name="bossId">
+            <select class="form-control" style="width: 20%" id="bossId" name="bossId"
+                    ng-options="option as option.name for option in bossList track by option.id"
+                    ng-model="selectedOptionBoss">
+                <option value=""></option>
 
             </select>
 
@@ -58,6 +66,6 @@
 
     </div>
 </form>
-
+</div>
 </body>
 </html>

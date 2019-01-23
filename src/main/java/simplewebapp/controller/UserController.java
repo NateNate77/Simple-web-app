@@ -1,12 +1,11 @@
 package simplewebapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import simplewebapp.dao.CompanyDAO;
 import simplewebapp.dao.UserDAO;
 import simplewebapp.domain.Company;
@@ -22,78 +21,54 @@ import java.util.Optional;
 /**
  * Created by Admin on 17.11.2018.
  */
-@Controller
+
+@RestController
 public class UserController {
 
     @Autowired
     private UserDAO userDAO;
     @Autowired
     private CompanyDAO companyDAO;
-    private static final int[] pageSizes = {5, 10};
 
-    @RequestMapping(value="/", method= RequestMethod.GET)
-    public String getUserPage(Model model, Optional<Integer> pageSize, Optional<Integer> page, Optional<String> name, Optional<String> nameByCompany) {
-       List<User> userList;
-       if(name.isPresent() && nameByCompany.isPresent()){
-           userList = userDAO.findUserByCompany(name.get(), nameByCompany.get());
-           model.addAttribute("name", name.get());
-           model.addAttribute("nameByCompany", nameByCompany.get());
-       }
-       else if(name.isPresent()){
-          userList = userDAO.findUser(name.get());
-          model.addAttribute("name", name.get());
-       }
-       else if(nameByCompany.isPresent()){
-           userList = userDAO.findCompany(nameByCompany.get());
-           model.addAttribute("nameByCompany", nameByCompany.get());
-       }
-       else {
-           userList = userDAO.getUsers();
-       }
-        List<User> pageUserList = new ArrayList<>();
+    @RequestMapping(
+            value = "/getUsers",
+            method = RequestMethod.GET
+    )
+    public List<User> getUsers() {
+        List<User> userList;
 
-        int pageSizeInt = !pageSize.isPresent() || pageSize.get() == null ? 5 : pageSize.get();
-        int pageInt = !page.isPresent() || page.get() == null ? 1 : page.get();
-        for(int i = (pageInt-1)*pageSizeInt; i<userList.size() && i< pageInt*pageSizeInt; i++){
-            pageUserList.add(userList.get(i));
-        }
-        double totalPagesDouble = Math.ceil((double) userList.size()/pageSizeInt);
+            userList = userDAO.getUsers();
 
-        int totalPages = (int) totalPagesDouble;
-
-        model.addAttribute("userList", pageUserList);
-        model.addAttribute("selectedPageSize", pageSizeInt);
-        model.addAttribute("currentPage", pageInt);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("pageSizes", pageSizes);
-        return "user.html";
+        return userList;
     }
 
 
-    @RequestMapping(value = "/add-new-user", method=RequestMethod.GET)
-    public String addNewUserPage(Model model) {
+    @RequestMapping(value = "/companies-for-add-new-user", method=RequestMethod.GET)
+    public List<Company> addNewUserPage() {
         List<Company> companyList = companyDAO.getCompanies();
-        model.addAttribute("companyList", companyList);
-        return "addNewUser.html";
+        return  companyList;
     }
 
 
 
     @RequestMapping(value="/add-new-user", method=RequestMethod.POST)
-    public String addNewUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId, Model model) throws Exception {
-        if(bossId.equals("")){
-            bossId = "null";
+    @ResponseBody
+    public Status addNewUser(@RequestBody AddNewUser addNewUser) throws Exception {
+        if(addNewUser.getBossId().equals("")){
+            addNewUser.setBossId("null");
         }
         try{
-            userDAO.addUser(name, bossId, companyId);
-            return "redirect:/";
+            userDAO.addUser(addNewUser.getName(), addNewUser.getBossId(), addNewUser.getCompanyId());
+
+            Status status = new Status(true);
+            return status;
         }
         catch (Exception e){
-            model.addAttribute("logError", e.getMessage());
-            List<Company> companyList = companyDAO.getCompanies();
-            model.addAttribute("companyList", companyList);
+
+            Status status = new Status(false, e.getMessage());
+            return status;
         }
-            return "addNewUser";
+
     }
 
 
@@ -104,49 +79,71 @@ public class UserController {
         return usersByCompany;
     }
 
+    @RequestMapping(value="/get-users-by-company-for-add-new-user", method=RequestMethod.POST)
+    @ResponseBody
+    public List<User> getUsersByCompanyForAddNewUser(@RequestParam(value="companyId") String companyId) throws IOException {
+        List<User> usersByCompany = userDAO.getUsersByCompanyForAddNewUser(companyId);
+        return usersByCompany;
+    }
 
-    @RequestMapping(value = "/update-user", method=RequestMethod.GET)
-    public String updateCompany (Model model, @RequestParam(value="id") String id) throws Exception {
+
+    @RequestMapping(
+            value = "/getUser-for-update",
+            params = { "id" },
+            method = RequestMethod.GET
+    )
+    public UpdateUser getUserForUpdate (@RequestParam(value="id") String id) throws Exception {
 
         User userUpdate = userDAO.getUserForUpdate(id);
-        model.addAttribute("userUpdate", userUpdate);
         List<Company> companyList = companyDAO.getCompanies();
-        model.addAttribute("companyList", companyList);
+        int companyId = userUpdate.getCompanyId();
+        String companyIdString = String.valueOf(companyId);
+        List<User> usersByCompany = userDAO.getUsersByCompany(companyIdString, id);
+        UpdateUser updateUser = new UpdateUser(userUpdate, companyList, usersByCompany);
 
-        return "updateUser.html";
+        return updateUser;
     }
 
     @RequestMapping(value="/update-user", method=RequestMethod.POST)
-    public String updateUser(@RequestParam(value="name") String name, @RequestParam(value="companyId") String companyId, @RequestParam(value="bossId") String bossId, @RequestParam(value="id") String id, Model model) {
-        if(bossId.equals("")){
-            bossId = "null";
+    @ResponseBody
+    public Status updateUser(@RequestBody UserUpdate userUpdate) {
+        if(userUpdate.getBossId().equals("")){
+            userUpdate.setBossId("null");
         }
+
         try{
-            userDAO.updateUser(name, bossId, companyId, id);
-            return "redirect:/";
-        }
-        catch (Exception e){
-            model.addAttribute("logError", e.getMessage());
-            User userUpdate = userDAO.getUserForUpdate(id);
-            model.addAttribute("userUpdate", userUpdate);
-            List<Company> companyList = companyDAO.getCompanies();
-            model.addAttribute("companyList", companyList);
+            userDAO.updateUser(userUpdate.getName(), userUpdate.getBossId(), userUpdate.getCompanyId(), userUpdate.getId());
+            Status status = new Status(true);
+            return status;
 
         }
-         return "updateUser";
+        catch (Exception e){
+
+            Status status = new Status(false, e.getMessage());
+            return status;
+
+        }
     }
 
     @RequestMapping(value="/delete-user", method=RequestMethod.POST)
     @ResponseBody
-    public String deleteUser(@RequestParam(value="id") String id) throws Exception {
+    public Status deleteUser(@RequestParam(value="id") String id) throws Exception {
 
-        userDAO.deleteUser(id);
-        return "Success";
+        try{
+            userDAO.deleteUser(id);
+            Status status = new Status(true);
+            return status;
+        }
+        catch (Exception e){
+            Status status = new Status(false, e.getMessage());
+            return status;
+        }
+
     }
 
 
-    @RequestMapping(value = "/staff-tree-view", method=RequestMethod.GET)
-    public String staffTreeView (Model model) {
+    @RequestMapping(value = "/get-staff-tree-view", method=RequestMethod.GET)
+    public List<UserTree> staffTreeView () {
         List<User> bossList = new ArrayList<>();
         List <User> userList = userDAO.getUsers();
         for (int i = 0; i < userList.size(); i++){
@@ -155,12 +152,9 @@ public class UserController {
             }
         }
 
-
-
         List<UserTree> userTreeList = userTree(userList, bossList);
-        model.addAttribute("userTreeList", userTreeList);
 
-        return "staffTree.html";
+        return userTreeList;
     }
 
 

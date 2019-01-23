@@ -98,18 +98,4 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     }
 
-    public List<Company> findCompanies(String name) {
-        String findName = name.trim();
-        String sqlWhere = " WHERE Companies.\"Name\" ilike \'%" + findName + "%\'";
-        String sql = String.format(CompanyMapper.BASE_SQL, sqlWhere);
-
-        Object[] params = new Object[] {};
-        CompanyMapper mapper = new CompanyMapper();
-        try {
-            List companies = this.getJdbcTemplate().query(sql, params, mapper);
-            return companies;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
 }

@@ -1,28 +1,41 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" ng-app="TreeApp">
 <head>
     <title>Companies Tree</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="script.js" defer></script>
-    <script src="jquery-3.3.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.js"></script>
+    <script src="uiTree.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel = "stylesheet" href = "treeStyle.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel = "stylesheet" href = "site.css">
+
 </head>
 
 <body class="w3-light-grey">
 <div th:insert="~{layout :: header}"></div>
 
-<div id="myUL" th:fragment="tree">
-    <ul>
-        <li th:each="companyTree : ${companyTreeList}">
-            <span  th:class="${not #lists.isEmpty(companyTree.companyTrees)} ? myCaret"  th:text="${companyTree.company.name}"></span>
-            <div  class="myNested" th:with=" companyTreeList = ${companyTree.companyTrees}" th:include="this :: tree"></div>
+<script type="text/ng-template" id="tree">
+    <span ng-class="{myCaret: item.companyTrees.length > 0, 'myCaret-down': item.isExpanded}" ng-click="item.isExpanded = !item.isExpanded">{{ item.company.name }}</span>
+    <div ng-class="{myNested: true, active: item.isExpanded}">
+    <ul ng-if="item.companyTrees">
+        <li ng-repeat="item in item.companyTrees" ng-include="'tree'">
         </li>
     </ul>
-</div>
+    </div>
+</script>
 
+<div ng-controller="TreeController">
+
+    <div id="myUL" >
+        <ul>
+        <li ng-repeat="item in list"
+            ng-include="'tree'"></li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>

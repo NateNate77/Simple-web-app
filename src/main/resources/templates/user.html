@@ -1,11 +1,14 @@
 
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" ng-app="gridApp">
 <head>
   <title>Users</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <script src="script.js" defer></script>
-  <script src="jquery-3.3.1.min.js"></script>
+  <script src="angular.min.js"></script>
+  <script src="http://ui-grid.info/release/ui-grid.min.js"></script>
+  <script src="gridApp.js"></script>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 
   <link rel="stylesheet"
         href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -13,6 +16,8 @@
         crossorigin="anonymous"></link>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel = "stylesheet" href = "site.css">
+  <link rel="stylesheet" href="http://ui-grid.info/release/ui-grid.min.css">
+
 
   </head>
   <body class="w3-light-grey">
@@ -23,86 +28,23 @@
 
 <div  class="checkbox-inline">
 
-  <form action="/" method="GET">
-    <label>Имя</label>
-    <input class="w3-input w3-border w3-round-large" id="search" type="text" name="name"  th:value="${name}">
-    <input hidden name="pageSize" th:value="${selectedPageSize}">
-
-    <label>Организация</label>
-    <input class="w3-input w3-border w3-round-large" type="text" name="nameByCompany"  th:value="${nameByCompany}">
-    <input class="w3-btn w3-green w3-round-large" type="submit" value="Поиск">
-  </form>
-
-
 </div>
 
   <div class="pull-right checkbox-inline">
     <button class="w3-btn w3-green w3-round-large" onclick="location.href='/add-new-user'">Создать</button>
   </div>
-  </div>
+
+  <br>
+  <br>
+  <br>
 
 
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Имя сотрудника</th>
-      <th>Организация</th>
-      <th>Руководитель</th>
-    </tr>
+</div>
 
-    <tr th:each="user : ${userList}">
-      <td th:utext="${user.id}">..</td>
-      <td><a th:utext="${user.name}" th:href="|/update-user?id=${user.id}|" title="Изменить"></a></td>
-      <td th:utext="${user.companyName}">..</td>
-      <td th:utext="${user.bossName}">..</td>
-    </tr>
-
-  </table>
-
-  <div class="row">
-    <div class="form-group col-md-1">
-      <select class="form-control pagination" id="pageSizeSelect">
-        <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
-                th:value="${pageSize}"
-                th:selected="${pageSize} == ${selectedPageSize}"></option>
-      </select>
+    <div ng-controller="UsersCtrl">
+      <div ui-grid="gridOptions" class="grid" ui-grid-pagination>
+      </div>
     </div>
-    <div th:if="${totalPages > 1}"
-         class="form-group col-md-11 pagination-centered">
-      <ul class="pagination">
-        <li th:class="${currentPage-1 == 0} ? disabled"><a
-                class="pageLink"
-                th:href="'/?pageSize=' + ${selectedPageSize} + '&amp;page=1' + ${name != null ? '&amp;name=' + name : ''} + ${nameByCompany != null ? '&amp;nameByCompany=' + nameByCompany : ''}">«</a>
-        </li>
-        <li th:class="${currentPage-1 == 0} ? disabled"><a
-                class="pageLink"
-                th:href="'/?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${currentPage-1} + ${name != null ? '&amp;name=' + name : ''} + ${nameByCompany != null ? '&amp;nameByCompany=' + nameByCompany : ''}">←</a>
-        </li>
-        <li
-                th:class="${currentPage-1 == (page - 1)} ? 'active pointer-disabled'"
-                th:each="page : ${#numbers.sequence(currentPage < 2  ? 1 : currentPage-1 , currentPage+1>totalPages ?  totalPages : currentPage+1)}"
-                >
-          <a class="pageLink"
-             th:href="'/?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${page} + ${name != null ? '&amp;name=' + name : ''} + ${nameByCompany != null ? '&amp;nameByCompany=' + nameByCompany : ''}"
-             th:text="${page}"></a>
-        </li>
-        <li
-                th:class="${currentPage == totalPages} ? disabled">
-          <a class="pageLink"
-             th:href="'/?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${currentPage + 1} + ${name != null ? '&amp;name=' + name : ''} + ${nameByCompany != null ? '&amp;nameByCompany=' + nameByCompany : ''}">→</a>
-        </li>
-        <li
-                th:class="${currentPage == totalPages} ? disabled">
-          <a class="pageLink"
-             th:href="'/?pageSize=' + ${selectedPageSize} + '&amp;page=' + ${totalPages} + ${name != null ? '&amp;name=' + name : ''} + ${nameByCompany != null ? '&amp;nameByCompany=' + nameByCompany : ''}">»</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-
-
-
 
   <script
           src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"

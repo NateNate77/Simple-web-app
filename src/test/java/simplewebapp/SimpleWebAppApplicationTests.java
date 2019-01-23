@@ -25,10 +25,10 @@ public class SimpleWebAppApplicationTests {
 		assertEquals(22, userDAO.getUsers().size());
 	}
 
-	@Test
-	public void findUserTest(){
-     assertEquals(1, userDAO.findUser("якуб").size());
-	}
+//	@Test
+//	public void findUserTest(){
+//    assertEquals(1, userDAO.findUser("якуб").size());
+//	}
 
 	@Test
 	public void getUsersByCompanyTest(){
@@ -40,15 +40,15 @@ public class SimpleWebAppApplicationTests {
 		assertEquals("Долженко Демьян", userDAO.getUserForUpdate("36").getName());
 	}
 
-	@Test
-	public void findCompanyTest(){
-		assertEquals(6, userDAO.findCompany("АВИТЕК").size());
-	}
+//	@Test
+//	public void findCompanyTest(){
+//		assertEquals(6, userDAO.findCompany("АВИТЕК").size());
+//	}
 
-	@Test
-	public void findUserByCompanyTest(){
-		assertEquals(1, userDAO.findUserByCompany("сонин", "авитек").size());
-	}
+//	@Test
+//	public void findUserByCompanyTest(){
+//		assertEquals(1, userDAO.findUserByCompany("сонин", "авитек").size());
+//	}
 
 	@Test
 	public void getCompaniesTest(){
@@ -60,9 +60,9 @@ public class SimpleWebAppApplicationTests {
 		assertEquals("ВесГрупп", companyDAO.getCompanyForUpdate("41").getName());
 	}
 
-	@Test
-	public void findCompaniesTest(){
-		assertEquals(1, companyDAO.findCompanies("сит").size());
-	}
+//	@Test
+//	public void findCompaniesTest(){
+//		assertEquals(1, companyDAO.findCompanies("сит").size());
+//	}
 
 }

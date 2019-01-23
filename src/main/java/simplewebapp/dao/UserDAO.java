@@ -35,20 +35,6 @@ public class UserDAO extends JdbcDaoSupport {
         return list;
     }
 
-    public List<User> findUser(String name) {
-        String findByName = name.trim();
-        String sqlWhere = " WHERE Users.\"Name\" ilike \'%" + findByName + "%\'";
-        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-        try {
-            List users = this.getJdbcTemplate().query(sql, params, mapper);
-            return users;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
 
     public void addUser(String name, String bossId, String companyId) throws Exception {
         String nameUser = name.trim();
@@ -72,6 +58,17 @@ public class UserDAO extends JdbcDaoSupport {
            }
        }
        return listUsersByCompany;
+
+    }
+
+    public List<User> getUsersByCompanyForAddNewUser(String companyId){
+        String sqlWhere =  " WHERE Users.\"CompanyID\" =" + companyId;
+        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
+        Object[] params = new Object[] {};
+        UserMapper mapper = new UserMapper();
+        List<User> listUsersByCompany = this.getJdbcTemplate().query(sql, params, mapper);
+
+        return listUsersByCompany;
 
     }
 
@@ -125,34 +122,6 @@ public class UserDAO extends JdbcDaoSupport {
             this.getJdbcTemplate().update(deleteFromSql);
         }
 
-    }
-
-    public List<User> findCompany(String companyName) {
-        String findByCompanyName = companyName.trim();
-        String sqlWhere = " WHERE Companies.\"Name\" ilike \'%" + findByCompanyName + "%\'";
-        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-        try {
-            List companies = this.getJdbcTemplate().query(sql, params, mapper);
-            return companies;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    public List<User> findUserByCompany(String name, String nameByCompany){
-        String findName = name.trim();
-        String findNameByCompany = nameByCompany.trim();
-        String sqlWhere = " WHERE Users.\"Name\" ilike \'%" + findName + "%\'" + " AND Companies.\"Name\" ilike \'%" + findNameByCompany + "%\'";
-        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-
-        List findUserByCompany = this.getJdbcTemplate().query(sql, params, mapper);
-        return findUserByCompany;
     }
 
 }
