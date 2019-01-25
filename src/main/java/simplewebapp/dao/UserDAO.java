@@ -1,14 +1,18 @@
 package simplewebapp.dao;
 
+import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import simplewebapp.domain.User;
-import simplewebapp.mapper.UserMapper;
+import simplewebapp.domain.UserTree;
+import simplewebapp.jooq.tables.Companies;
+import simplewebapp.jooq.tables.Staff;
+
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,13 +28,47 @@ public class UserDAO extends JdbcDaoSupport {
         this.setDataSource(dataSource);
     }
 
+    @Autowired
+    private DSLContext dsl;
+
+    private Staff staffMain = Staff.STAFF.as("S1");
+    private Staff staffBoss = Staff.STAFF.as("S2");
+
+    private SelectOnConditionStep<Record6<Integer, String, Integer, Integer, String, String>> resultQuery() {
+        return dsl
+                .select(staffMain.ID, staffMain.NAME, staffMain.BOSSID, staffMain.COMPANYID, Companies.COMPANIES.NAME, staffBoss.NAME)
+                .from(staffMain)
+                .innerJoin(Companies.COMPANIES)
+                .on(staffMain.COMPANYID.equal(Companies.COMPANIES.ID))
+                .leftJoin(staffBoss)
+                .on(staffBoss.ID.equal(staffMain.BOSSID));
+    }
+
+    public List<User> getUserList(Result<Record6<Integer, String, Integer, Integer, String, String>> result){
+
+        List<User> list = new ArrayList<>();
+        for (Record6 r : result) {
+
+            Integer id = r.getValue(staffMain.ID, Integer.class);
+            String name = r.getValue(staffMain.NAME, String.class);
+            Integer bossId = r.getValue(staffMain.BOSSID, Integer.class);
+            Integer companyId = r.getValue(staffMain.COMPANYID, Integer.class);
+            String companyName = r.getValue(Companies.COMPANIES.NAME, String.class);
+            String bossName = r.getValue(staffBoss.NAME, String.class);
+
+            User user = new User (id, name, companyId,  bossId, bossName, companyName);
+
+            list.add(user);
+        }
+
+        return list;
+    }
+
     public List<User> getUsers() {
 
-        String sql = String.format(UserMapper.BASE_SQL,"");
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().fetch();
 
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-        List<User> list = this.getJdbcTemplate().query(sql, params, mapper);
+        List<User> list = getUserList(result);
 
         return list;
     }
@@ -42,16 +80,23 @@ public class UserDAO extends JdbcDaoSupport {
 
             throw new Exception("Введите имя");
         }
-        String sql = String.format(UserMapper.insrtSQL, nameUser , bossId, companyId) ;
-        this.getJdbcTemplate().update(sql);
+
+        Integer bossIdInt = bossId.equals("") ? null : Integer.parseInt(bossId);
+        Integer companyIdInt = Integer.parseInt(companyId);
+
+        dsl.insertInto(Staff.STAFF)
+                .set(Staff.STAFF.NAME, nameUser)
+                .set(Staff.STAFF.BOSSID, bossIdInt)
+                .set(Staff.STAFF.COMPANYID, companyIdInt)
+                .execute();
     }
 
     public List<User> getUsersByCompany(String companyId, String id){
-        String sqlWhere =  " WHERE Users.\"CompanyID\" =" + companyId;
-        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-       List<User> listUsersByCompany = this.getJdbcTemplate().query(sql, params, mapper);
+
+        Integer companyIdInt = Integer.parseInt(companyId);
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.COMPANYID.eq(companyIdInt)).fetch();
+
+       List<User> listUsersByCompany = getUserList(result);
        for (int i = 0; i<listUsersByCompany.size(); i++){
            if(String.valueOf(listUsersByCompany.get(i).getId()).equals(id)){
                listUsersByCompany.remove(i);
@@ -62,22 +107,21 @@ public class UserDAO extends JdbcDaoSupport {
     }
 
     public List<User> getUsersByCompanyForAddNewUser(String companyId){
-        String sqlWhere =  " WHERE Users.\"CompanyID\" =" + companyId;
-        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-        List<User> listUsersByCompany = this.getJdbcTemplate().query(sql, params, mapper);
+
+        Integer companyIdInt = Integer.parseInt(companyId);
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.COMPANYID.eq(companyIdInt)).fetch();
+
+        List<User> listUsersByCompany = getUserList(result);
 
         return listUsersByCompany;
 
     }
 
     public User getUserForUpdate(String id){
-            String sqlWhere =  " WHERE Users.\"ID\" =" + id;
-            String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-            Object[] params = new Object[] {};
-            UserMapper mapper = new UserMapper();
-            List<User> user = this.getJdbcTemplate().query(sql, params, mapper);
+
+        Integer idInt = Integer.parseInt(id);
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.ID.eq(idInt)).fetch();
+            List<User> user = getUserList(result);
 
             return user.get(0);
 
@@ -85,11 +129,11 @@ public class UserDAO extends JdbcDaoSupport {
     }
 
     public void updateUser(String name, String bossId, String companyId, String id) throws Exception {
-        String sqlWhere = " WHERE Users.\"BossID\" =" + id;
-        String sqlWhereIdIsBoss = String.format(UserMapper.BASE_SQL, sqlWhere);
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-        List<User> user = this.getJdbcTemplate().query(sqlWhereIdIsBoss, params, mapper);
+
+        Integer idInt = Integer.parseInt(id);
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.BOSSID.eq(idInt)).fetch();
+
+        List<User> user = getUserList(result);
         String nameUser = name.trim();
         if(nameUser.isEmpty()){
 
@@ -104,24 +148,86 @@ public class UserDAO extends JdbcDaoSupport {
         if(bossId.equals(id)){
             throw new Exception("Нельзя устанавливать руководителем самого себя");
         }
-        String sql = String.format(UserMapper.updateUserSQL, nameUser, bossId, companyId, id);
-        this.getJdbcTemplate().update(sql);
+
+        Integer bossIdInt = bossId.equals("") ? null : Integer.parseInt(bossId);
+        Integer companyIdInt = Integer.parseInt(companyId);
+
+
+        dsl.update(Staff.STAFF)
+                .set(Staff.STAFF.NAME, nameUser)
+                .set(Staff.STAFF.COMPANYID, companyIdInt)
+                .set(Staff.STAFF.BOSSID, bossIdInt)
+                .where(Staff.STAFF.ID.equal(idInt))
+                .execute();
     }
 
     public void deleteUser(String id) throws Exception {
-        String sqlWhere =  " WHERE Users.\"BossID\" =" + id;
-        String sql = String.format(UserMapper.BASE_SQL, sqlWhere);
-        Object[] params = new Object[] {};
-        UserMapper mapper = new UserMapper();
-        List<User> user = this.getJdbcTemplate().query(sql, params, mapper);
+
+        Integer idInt = Integer.parseInt(id);
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.BOSSID.eq(idInt)).fetch();
+
+        List<User> user = getUserList(result);
         if(user.size()>0){
             throw new Exception("Сотрудник не может быть удален, так как у него есть подчиненные");
         }
         else {
-            String deleteFromSql = String.format(UserMapper.deleteUserSQL, id);
-            this.getJdbcTemplate().update(deleteFromSql);
+
+            dsl.delete(Staff.STAFF)
+                    .where(Staff.STAFF.ID.eq(idInt))
+                    .execute();
         }
 
     }
 
+
+    public List<UserTree> staffTreeView(){
+        List<User> bossList = new ArrayList<>();
+        List <User> userList = getUsers();
+
+        for (int i = 0; i < userList.size(); i++){
+            if(userList.get(i).getBossId()==null){
+                bossList.add(userList.get(i));
+            }
+        }
+        List<UserTree> userTreeList = userTree(userList, bossList);
+
+        return userTreeList;
+    }
+
+
+
+    public List<UserTree> userTree(List<User> userList, List<User> bossList){
+        List<UserTree> userTreeList = new ArrayList<>();
+
+        for (int j = 0; j<bossList.size(); j++){
+            UserTree userTree = new UserTree();
+            userTree.user = bossList.get(j);
+            userTreeList.add(userTree);
+
+            recursionUserTree(userTree, userList);
+
+        }
+        return userTreeList;
+    }
+
+    public UserTree recursionUserTree(UserTree userTree, List<User> userList){
+
+        for(int i = 0; i<userList.size(); i++){
+
+            if(userList.get(i).getBossId() != null && userList.get(i).getBossId() == userTree.user.getId()){
+
+                UserTree userTreeIn = new UserTree();
+                userTreeIn.user = userList.get(i);
+                userTree.userTrees.add(userTreeIn);
+                recursionUserTree(userTreeIn, userList);
+            }
+        }
+
+        return userTree;
+    }
+
+
 }
+
+
+

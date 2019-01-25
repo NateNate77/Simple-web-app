@@ -1,4 +1,4 @@
-package simplewebapp.controller;
+package simplewebapp.dao;
 
 public class CompanyUpdate {
     private String name;

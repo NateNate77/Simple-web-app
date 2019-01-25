@@ -1,11 +1,9 @@
-package simplewebapp.controller;
+package simplewebapp.dao;
 
-public class UserUpdate {
+public class AddNewUser {
     private String name;
     private String companyId;
     private String bossId;
-    private String id;
-
 
     public String getName(){
         return name;
@@ -19,10 +17,6 @@ public class UserUpdate {
         return bossId;
     }
 
-    public String getId(){
-        return id;
-    }
-
     public void setName(String name){
         this.name = name;
     }
@@ -34,10 +28,5 @@ public class UserUpdate {
         this.bossId = bossId;
     }
 
-    public void setId(String id){
-        this.id = id;
-    }
-
 
 }
-

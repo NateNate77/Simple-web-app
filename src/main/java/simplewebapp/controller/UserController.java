@@ -1,13 +1,8 @@
 package simplewebapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import simplewebapp.dao.CompanyDAO;
-import simplewebapp.dao.UserDAO;
+import simplewebapp.dao.*;
 import simplewebapp.domain.Company;
 import simplewebapp.domain.User;
 import simplewebapp.domain.UserTree;
@@ -15,7 +10,6 @@ import simplewebapp.domain.UserTree;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 /**
@@ -42,21 +36,16 @@ public class UserController {
         return userList;
     }
 
-
     @RequestMapping(value = "/companies-for-add-new-user", method=RequestMethod.GET)
     public List<Company> addNewUserPage() {
         List<Company> companyList = companyDAO.getCompanies();
         return  companyList;
     }
 
-
-
     @RequestMapping(value="/add-new-user", method=RequestMethod.POST)
     @ResponseBody
     public Status addNewUser(@RequestBody AddNewUser addNewUser) throws Exception {
-        if(addNewUser.getBossId().equals("")){
-            addNewUser.setBossId("null");
-        }
+
         try{
             userDAO.addUser(addNewUser.getName(), addNewUser.getBossId(), addNewUser.getCompanyId());
 
@@ -71,7 +60,6 @@ public class UserController {
 
     }
 
-
     @RequestMapping(value="/get-users-by-company", method=RequestMethod.POST)
     @ResponseBody
     public List<User> getUsersByCompany(@RequestParam(value="companyId") String companyId,  @RequestParam(value="id") String id) throws IOException {
@@ -85,7 +73,6 @@ public class UserController {
         List<User> usersByCompany = userDAO.getUsersByCompanyForAddNewUser(companyId);
         return usersByCompany;
     }
-
 
     @RequestMapping(
             value = "/getUser-for-update",
@@ -107,9 +94,6 @@ public class UserController {
     @RequestMapping(value="/update-user", method=RequestMethod.POST)
     @ResponseBody
     public Status updateUser(@RequestBody UserUpdate userUpdate) {
-        if(userUpdate.getBossId().equals("")){
-            userUpdate.setBossId("null");
-        }
 
         try{
             userDAO.updateUser(userUpdate.getName(), userUpdate.getBossId(), userUpdate.getCompanyId(), userUpdate.getId());
@@ -141,51 +125,12 @@ public class UserController {
 
     }
 
-
     @RequestMapping(value = "/get-staff-tree-view", method=RequestMethod.GET)
     public List<UserTree> staffTreeView () {
-        List<User> bossList = new ArrayList<>();
-        List <User> userList = userDAO.getUsers();
-        for (int i = 0; i < userList.size(); i++){
-            if(userList.get(i).getBossId()==null){
-                bossList.add(userList.get(i));
-            }
-        }
 
-        List<UserTree> userTreeList = userTree(userList, bossList);
+        List<UserTree> userTreeList = userDAO.staffTreeView();
 
         return userTreeList;
-    }
-
-
-    public List<UserTree> userTree(List<User> userList, List<User> bossList){
-        List<UserTree> userTreeList = new ArrayList<>();
-
-        for (int j = 0; j<bossList.size(); j++){
-            UserTree userTree = new UserTree();
-            userTree.user = bossList.get(j);
-            userTreeList.add(userTree);
-
-            recursionUserTree(userTree, userList);
-
-        }
-        return userTreeList;
-    }
-
-    public UserTree recursionUserTree(UserTree userTree, List<User> userList){
-
-        for(int i = 0; i<userList.size(); i++){
-
-                if(userList.get(i).getBossId() != null && userList.get(i).getBossId() == userTree.user.getId()){
-
-                    UserTree userTreeIn = new UserTree();
-                    userTreeIn.user = userList.get(i);
-                    userTree.userTrees.add(userTreeIn);
-                    recursionUserTree(userTreeIn, userList);
-                }
-        }
-
-        return userTree;
     }
 
 }

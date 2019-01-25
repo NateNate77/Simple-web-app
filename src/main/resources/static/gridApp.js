@@ -65,7 +65,7 @@ app.controller('CompaniesCtrl', ['$scope','CompaniesService',
             paginationPageSize: paginationOptions.pageSize,
             enableColumnMenus:false,
             columnDefs: [
-                { name: 'id', enableFiltering: false },
+                { name: 'id', enableFiltering: false, type: 'number' },
                 { name: 'name', cellTemplate: '<div><a ng-href="/update-company?id={{row.entity.id}}" title="Изменить">{{row.entity.name}}</a></div>' },
                 { name: 'usersCount', enableFiltering: false},
                 { name: 'headCompanyName', enableFiltering: false }

@@ -1,4 +1,4 @@
-package simplewebapp.controller;
+package simplewebapp.dao;
 
 import simplewebapp.domain.Company;
 
