@@ -2,18 +2,18 @@ package simplewebapp.dao;
 
 public class AddNewUser {
     private String name;
-    private String companyId;
-    private String bossId;
+    private Integer companyId;
+    private Integer bossId;
 
     public String getName(){
         return name;
     }
 
-    public String getCompanyId(){
+    public Integer getCompanyId(){
         return companyId;
     }
 
-    public String getBossId(){
+    public Integer getBossId(){
         return bossId;
     }
 
@@ -21,10 +21,10 @@ public class AddNewUser {
         this.name = name;
     }
 
-    public void setCompanyId(String companyId){
+    public void setCompanyId(Integer companyId){
         this.companyId = companyId;
     }
-    public void setBossId(String bossId){
+    public void setBossId(Integer bossId){
         this.bossId = bossId;
     }
 

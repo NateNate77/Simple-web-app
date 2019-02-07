@@ -2,19 +2,15 @@ package simplewebapp.dao;
 
 import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import simplewebapp.domain.Company;
 import simplewebapp.domain.CompanyTree;
 import simplewebapp.jooq.tables.Companies;
 import simplewebapp.jooq.tables.Staff;
 
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,19 +20,21 @@ import static org.jooq.impl.DSL.count;
  * Created by Admin on 21.11.2018.
  */
 @Repository
-@Transactional
-public class CompanyDAO extends JdbcDaoSupport {
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Autowired
-    public CompanyDAO(DataSource dataSource) {
-        this.setDataSource(dataSource);
-    }
+public class CompanyDAO  {
 
-    @Autowired
+
+    @Autowired(required = true)
     private DSLContext dsl;
 
     private Companies companyMain = Companies.COMPANIES.as("S1");
     private Companies companyBoss = Companies.COMPANIES.as("S2");
+
+    private SelectOnConditionStep<Record1<Integer>> resultQueryCompanyCount(){
+        return (SelectOnConditionStep<Record1<Integer>>) dsl
+                .select(count(Companies.COMPANIES.ID).as("CompaniesCount"))
+                .from(Companies.COMPANIES);
+    }
+
 
     private SelectOnConditionStep<Record5<Integer, String, Integer, String, Integer>> resultQuery() {
         return dsl
@@ -79,27 +77,24 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     }
 
-
-    public void addCompany(String name, String headCompanyId) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+    public void addCompany(String name, Integer headCompanyId) throws Exception {
         String nameCompany = name.trim();
         if(nameCompany.isEmpty()){
 
             throw new Exception("Введите название организации");
         }
 
-        Integer headCompanyIdInt = headCompanyId.equals("") ? null : Integer.parseInt(headCompanyId);
-
         dsl.insertInto(Companies.COMPANIES)
                 .set(Companies.COMPANIES.NAME, nameCompany)
-                .set(Companies.COMPANIES.HEADCOMPANYID, headCompanyIdInt)
+                .set(Companies.COMPANIES.HEADCOMPANYID, headCompanyId)
                 .execute();
 
     }
 
-    public Company getCompanyForUpdate(String id){
+    public Company getCompanyForUpdate(Integer id){
 
-        Integer idInt = Integer.parseInt(id);
-        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery().where(companyMain.ID.eq(idInt)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
+        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery().where(companyMain.ID.eq(id)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
 
         List<Company> company = getCompanyList(result);
 
@@ -107,39 +102,34 @@ public class CompanyDAO extends JdbcDaoSupport {
 
     }
 
-    public void updateCompany(String name, String headCompanyId, String id) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+    public void updateCompany(String name, Integer headCompanyId, Integer id) throws Exception {
         String nameCompany = name.trim();
         if(nameCompany.isEmpty()){
 
             throw new Exception("Введите название организации");
         }
 
-
-        if(headCompanyId.equals(id)){
+        if(headCompanyId==id){
             throw new Exception("Нельзя устанавливать головной организацией саму себя");
         }
 
-        Integer headCompanyIdInt = headCompanyId.equals("") ? null : Integer.parseInt(headCompanyId);
-        Integer idInt = Integer.parseInt(id);
-
-
         dsl.update(Companies.COMPANIES)
                 .set(Companies.COMPANIES.NAME, nameCompany)
-                .set(Companies.COMPANIES.HEADCOMPANYID, headCompanyIdInt)
-                .where(Companies.COMPANIES.ID.equal(idInt))
+                .set(Companies.COMPANIES.HEADCOMPANYID, headCompanyId)
+                .where(Companies.COMPANIES.ID.equal(id))
                 .execute();
     }
 
-    public void deleteCompany(String id) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+    public void deleteCompany(Integer id) throws Exception {
 
-        Integer idInt = Integer.parseInt(id);
-        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery().where(companyMain.HEADCOMPANYID.eq(idInt)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
-        List<Company> companies = getCompanyList(result);
-        if(companies.size()>0){
+        int r = resultQueryCompanyCount().where(companyMain.HEADCOMPANYID.eq(id)).fetchOne(0, int.class);
+        if(r>0){
             throw new Exception("Организация не может быть удалена, так как у нее есть дочерние организации");
         }
 
-        Result<Record5<Integer, String, Integer, String, Integer>> resultForDelete = resultQuery().where(companyMain.ID.eq(idInt)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
+        Result<Record5<Integer, String, Integer, String, Integer>> resultForDelete = resultQuery().where(companyMain.ID.eq(id)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
 
 
         List<Company> companiesForDelete = getCompanyList(resultForDelete);
@@ -149,7 +139,7 @@ public class CompanyDAO extends JdbcDaoSupport {
             }
 
         dsl.delete(Companies.COMPANIES)
-                .where(Companies.COMPANIES.ID.eq(idInt))
+                .where(Companies.COMPANIES.ID.eq(id))
                 .execute();
 
 

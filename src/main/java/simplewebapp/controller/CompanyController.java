@@ -6,7 +6,6 @@ import simplewebapp.dao.*;
 import simplewebapp.domain.Company;
 import simplewebapp.domain.CompanyTree;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +35,6 @@ public class CompanyController {
     }
 
     @RequestMapping(value="/add-new-company", method=RequestMethod.POST)
-    @ResponseBody
     public Status addNewCompany(@RequestBody AddNewCompany addNewCompany) throws Exception {
 
         try {
@@ -57,7 +55,7 @@ public class CompanyController {
             params = { "id" },
             method = RequestMethod.GET)
 
-    public UpdateCompany updateCompany (@RequestParam(value="id") String id) {
+    public UpdateCompany updateCompany (@RequestParam(value="id") Integer id) {
 
         Company companyUpdate = companyDAO.getCompanyForUpdate(id);
         List<Company> companyList = companyDAO.getCompanies();
@@ -67,7 +65,6 @@ public class CompanyController {
     }
 
     @RequestMapping(value="/update-company", method=RequestMethod.POST)
-    @ResponseBody
     public Status updateCompany(@RequestBody CompanyUpdate companyUpdate) {
 
         try {
@@ -85,8 +82,7 @@ public class CompanyController {
     }
 
     @RequestMapping(value="/delete-company", method=RequestMethod.POST)
-    @ResponseBody
-    public Status deleteCompany(@RequestParam(value="id") String id) throws Exception {
+    public Status deleteCompany(@RequestParam(value="id") Integer id) throws Exception {
 
         try {
             companyDAO.deleteCompany(id);

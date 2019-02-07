@@ -3,14 +3,14 @@ package simplewebapp.dao;
 public class AddNewCompany {
 
     private String name;
-    private String headCompanyId;
+    private Integer headCompanyId;
 
 
     public String getName(){
         return name;
     }
 
-    public String getHeadCompanyId(){
+    public Integer getHeadCompanyId(){
         return headCompanyId;
     }
 
@@ -19,7 +19,7 @@ public class AddNewCompany {
         this.name = name;
     }
 
-    public void setHeadCompanyId(String headCompanyId){
+    public void setHeadCompanyId(Integer headCompanyId){
         this.headCompanyId = headCompanyId;
     }
 

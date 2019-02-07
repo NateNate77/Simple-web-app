@@ -2,37 +2,39 @@ package simplewebapp.dao;
 
 import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import simplewebapp.domain.User;
 import simplewebapp.domain.UserTree;
 import simplewebapp.jooq.tables.Companies;
 import simplewebapp.jooq.tables.Staff;
 
-
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.jooq.impl.DSL.count;
 
 /**
  * Created by Admin on 19.11.2018.
  */
 @Repository
-@Transactional
-public class UserDAO extends JdbcDaoSupport {
+public class UserDAO  {
 
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Autowired
-    public UserDAO(DataSource dataSource) {
-        this.setDataSource(dataSource);
-    }
 
-    @Autowired
+    @Autowired(required = true)
     private DSLContext dsl;
 
     private Staff staffMain = Staff.STAFF.as("S1");
     private Staff staffBoss = Staff.STAFF.as("S2");
+
+    private SelectOnConditionStep<Record1<Integer>> resultQueryCountUser(){
+        return (SelectOnConditionStep<Record1<Integer>>) dsl
+                .select(count(Staff.STAFF.ID).as("UsersCount"))
+                .from(Staff.STAFF);
+    }
+
 
     private SelectOnConditionStep<Record6<Integer, String, Integer, Integer, String, String>> resultQuery() {
         return dsl
@@ -73,43 +75,48 @@ public class UserDAO extends JdbcDaoSupport {
         return list;
     }
 
-
-    public void addUser(String name, String bossId, String companyId) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+    public void addUser(String name, Integer bossId, Integer companyId) throws Exception {
         String nameUser = name.trim();
         if(nameUser.isEmpty()){
 
             throw new Exception("Введите имя");
         }
 
-        Integer bossIdInt = bossId.equals("") ? null : Integer.parseInt(bossId);
-        Integer companyIdInt = Integer.parseInt(companyId);
 
         dsl.insertInto(Staff.STAFF)
                 .set(Staff.STAFF.NAME, nameUser)
-                .set(Staff.STAFF.BOSSID, bossIdInt)
-                .set(Staff.STAFF.COMPANYID, companyIdInt)
+                .set(Staff.STAFF.BOSSID, bossId)
+                .set(Staff.STAFF.COMPANYID, companyId)
                 .execute();
     }
 
-    public List<User> getUsersByCompany(String companyId, String id){
+    public List<User> getUsersByCompany(Integer companyId, Integer id){
 
-        Integer companyIdInt = Integer.parseInt(companyId);
-        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.COMPANYID.eq(companyIdInt)).fetch();
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.COMPANYID.eq(companyId)).fetch();
 
        List<User> listUsersByCompany = getUserList(result);
-       for (int i = 0; i<listUsersByCompany.size(); i++){
-           if(String.valueOf(listUsersByCompany.get(i).getId()).equals(id)){
-               listUsersByCompany.remove(i);
-           }
-       }
+
+        for (int i = 0; i<listUsersByCompany.size(); i++){
+            if(listUsersByCompany.get(i).getId()==id){
+                listUsersByCompany.remove(i);
+            }
+        }
+
+//        for (int j = 0; j<listUsersByCompany.size(); j++){
+//            if(listUsersByCompany.get(j).getBossId()==id){
+//                listUsersByCompany.remove(j);
+//                j--;
+//            }
+//        }
+
        return listUsersByCompany;
 
     }
 
-    public List<User> getUsersByCompanyForAddNewUser(String companyId){
+    public List<User> getUsersByCompanyForAddNewUser(Integer companyId){
 
-        Integer companyIdInt = Integer.parseInt(companyId);
-        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.COMPANYID.eq(companyIdInt)).fetch();
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.COMPANYID.eq(companyId)).fetch();
 
         List<User> listUsersByCompany = getUserList(result);
 
@@ -117,10 +124,9 @@ public class UserDAO extends JdbcDaoSupport {
 
     }
 
-    public User getUserForUpdate(String id){
+    public User getUserForUpdate(Integer id){
 
-        Integer idInt = Integer.parseInt(id);
-        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.ID.eq(idInt)).fetch();
+        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.ID.eq(id)).fetch();
             List<User> user = getUserList(result);
 
             return user.get(0);
@@ -128,52 +134,45 @@ public class UserDAO extends JdbcDaoSupport {
 
     }
 
-    public void updateUser(String name, String bossId, String companyId, String id) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+    public void updateUser(String name, Integer bossId, Integer companyId, Integer id) throws Exception {
 
-        Integer idInt = Integer.parseInt(id);
-        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.BOSSID.eq(idInt)).fetch();
+        int r = resultQueryCountUser().where(Staff.STAFF.BOSSID.eq(id)).fetchOne(0, int.class);
 
-        List<User> user = getUserList(result);
         String nameUser = name.trim();
         if(nameUser.isEmpty()){
 
             throw new Exception("Введите имя");
         }
-
-        if(!String.valueOf(getUserForUpdate(id).getCompanyId()).equals(companyId) && user.size()>0){
+        if(getUserForUpdate(id).getCompanyId()!=companyId && r>0){
 
             throw new Exception("Сотрудник не может быть перемещен в другую организацию, так как у него есть подчиненные");
         }
 
-        if(bossId.equals(id)){
+        if(bossId==id){
             throw new Exception("Нельзя устанавливать руководителем самого себя");
         }
 
-        Integer bossIdInt = bossId.equals("") ? null : Integer.parseInt(bossId);
-        Integer companyIdInt = Integer.parseInt(companyId);
-
-
         dsl.update(Staff.STAFF)
                 .set(Staff.STAFF.NAME, nameUser)
-                .set(Staff.STAFF.COMPANYID, companyIdInt)
-                .set(Staff.STAFF.BOSSID, bossIdInt)
-                .where(Staff.STAFF.ID.equal(idInt))
+                .set(Staff.STAFF.COMPANYID, companyId)
+                .set(Staff.STAFF.BOSSID, bossId)
+                .where(Staff.STAFF.ID.equal(id))
                 .execute();
     }
 
-    public void deleteUser(String id) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
+    public void deleteUser(Integer id) throws Exception {
 
-        Integer idInt = Integer.parseInt(id);
-        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.BOSSID.eq(idInt)).fetch();
+        int r = resultQueryCountUser().where(Staff.STAFF.BOSSID.eq(id)).fetchOne(0, int.class);
 
-        List<User> user = getUserList(result);
-        if(user.size()>0){
+        if(r>0){
             throw new Exception("Сотрудник не может быть удален, так как у него есть подчиненные");
         }
         else {
 
             dsl.delete(Staff.STAFF)
-                    .where(Staff.STAFF.ID.eq(idInt))
+                    .where(Staff.STAFF.ID.eq(id))
                     .execute();
         }
 

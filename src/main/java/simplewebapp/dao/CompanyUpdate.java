@@ -2,19 +2,19 @@ package simplewebapp.dao;
 
 public class CompanyUpdate {
     private String name;
-    private String headCompanyId;
-    private String id;
+    private Integer headCompanyId;
+    private Integer id;
 
 
     public String getName(){
         return name;
     }
 
-    public String getHeadCompanyId(){
+    public Integer getHeadCompanyId(){
         return headCompanyId;
     }
 
-    public String getId(){
+    public Integer getId(){
         return id;
     }
 
@@ -22,11 +22,11 @@ public class CompanyUpdate {
         this.name = name;
     }
 
-    public void setHeadCompanyId(String headCompanyId){
+    public void setHeadCompanyId(Integer headCompanyId){
         this.headCompanyId = headCompanyId;
     }
 
-    public void setId(String id){
+    public void setId(Integer id){
         this.id = id;
     }
 

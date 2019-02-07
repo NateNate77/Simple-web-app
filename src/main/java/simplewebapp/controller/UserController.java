@@ -43,7 +43,6 @@ public class UserController {
     }
 
     @RequestMapping(value="/add-new-user", method=RequestMethod.POST)
-    @ResponseBody
     public Status addNewUser(@RequestBody AddNewUser addNewUser) throws Exception {
 
         try{
@@ -61,15 +60,13 @@ public class UserController {
     }
 
     @RequestMapping(value="/get-users-by-company", method=RequestMethod.POST)
-    @ResponseBody
-    public List<User> getUsersByCompany(@RequestParam(value="companyId") String companyId,  @RequestParam(value="id") String id) throws IOException {
+    public List<User> getUsersByCompany(@RequestParam(value="companyId") Integer companyId,  @RequestParam(value="id") Integer id) throws IOException {
         List<User> usersByCompany = userDAO.getUsersByCompany(companyId, id);
         return usersByCompany;
     }
 
     @RequestMapping(value="/get-users-by-company-for-add-new-user", method=RequestMethod.POST)
-    @ResponseBody
-    public List<User> getUsersByCompanyForAddNewUser(@RequestParam(value="companyId") String companyId) throws IOException {
+    public List<User> getUsersByCompanyForAddNewUser(@RequestParam(value="companyId") Integer companyId) throws IOException {
         List<User> usersByCompany = userDAO.getUsersByCompanyForAddNewUser(companyId);
         return usersByCompany;
     }
@@ -79,20 +76,18 @@ public class UserController {
             params = { "id" },
             method = RequestMethod.GET
     )
-    public UpdateUser getUserForUpdate (@RequestParam(value="id") String id) throws Exception {
+    public UpdateUser getUserForUpdate (@RequestParam(value="id") Integer id) throws Exception {
 
         User userUpdate = userDAO.getUserForUpdate(id);
         List<Company> companyList = companyDAO.getCompanies();
         int companyId = userUpdate.getCompanyId();
-        String companyIdString = String.valueOf(companyId);
-        List<User> usersByCompany = userDAO.getUsersByCompany(companyIdString, id);
+        List<User> usersByCompany = userDAO.getUsersByCompany(companyId, id);
         UpdateUser updateUser = new UpdateUser(userUpdate, companyList, usersByCompany);
 
         return updateUser;
     }
 
     @RequestMapping(value="/update-user", method=RequestMethod.POST)
-    @ResponseBody
     public Status updateUser(@RequestBody UserUpdate userUpdate) {
 
         try{
@@ -110,8 +105,7 @@ public class UserController {
     }
 
     @RequestMapping(value="/delete-user", method=RequestMethod.POST)
-    @ResponseBody
-    public Status deleteUser(@RequestParam(value="id") String id) throws Exception {
+    public Status deleteUser(@RequestParam(value="id") Integer id) throws Exception {
 
         try{
             userDAO.deleteUser(id);

@@ -2,24 +2,24 @@ package simplewebapp.dao;
 
 public class UserUpdate {
     private String name;
-    private String companyId;
-    private String bossId;
-    private String id;
+    private Integer companyId;
+    private Integer bossId;
+    private Integer id;
 
 
     public String getName(){
         return name;
     }
 
-    public String getCompanyId(){
+    public Integer getCompanyId(){
         return companyId;
     }
 
-    public String getBossId(){
+    public Integer getBossId(){
         return bossId;
     }
 
-    public String getId(){
+    public Integer getId(){
         return id;
     }
 
@@ -27,14 +27,14 @@ public class UserUpdate {
         this.name = name;
     }
 
-    public void setCompanyId(String companyId){
+    public void setCompanyId(Integer companyId){
         this.companyId = companyId;
     }
-    public void setBossId(String bossId){
+    public void setBossId(Integer bossId){
         this.bossId = bossId;
     }
 
-    public void setId(String id){
+    public void setId(Integer id){
         this.id = id;
     }
 
