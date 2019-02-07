@@ -35,7 +35,7 @@ public class CompanyController {
     }
 
     @RequestMapping(value="/add-new-company", method=RequestMethod.POST)
-    public Status addNewCompany(@RequestBody AddNewCompany addNewCompany) throws Exception {
+    public Status addNewCompany(@RequestBody AddNewCompany addNewCompany) {
 
         try {
             companyDAO.addCompany(addNewCompany.getName(), addNewCompany.getHeadCompanyId());
@@ -82,7 +82,7 @@ public class CompanyController {
     }
 
     @RequestMapping(value="/delete-company", method=RequestMethod.POST)
-    public Status deleteCompany(@RequestParam(value="id") Integer id) throws Exception {
+    public Status deleteCompany(@RequestParam(value="id") Integer id) {
 
         try {
             companyDAO.deleteCompany(id);

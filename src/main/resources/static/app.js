@@ -97,7 +97,7 @@ app.service('UserUpdateService',['$http', function ($http) {
     
     function getUsersByCompany(companyId, id) {
         return $http({
-            method: 'POST',
+            method: 'GET',
             url: 'get-users-by-company?companyId=' + companyId + "&id=" + id
         });
     }
@@ -172,7 +172,7 @@ app.service('AddNewUserService',['$http', function ($http) {
 
     function getUsersByCompany(companyId) {
         return $http({
-            method: 'POST',
+            method: 'GET',
             url: 'get-users-by-company-for-add-new-user?companyId=' + companyId
         });
     }

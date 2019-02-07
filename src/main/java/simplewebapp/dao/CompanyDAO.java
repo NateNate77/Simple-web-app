@@ -69,7 +69,9 @@ public class CompanyDAO  {
 
     public List<Company> getCompanies() {
 
-        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery().groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
+        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery()
+                .groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME)
+                .fetch();
 
         List<Company> list = getCompanyList(result);
 
@@ -92,10 +94,13 @@ public class CompanyDAO  {
 
     }
 
-    public Company getCompanyForUpdate(Integer id){
+    public Company getCompanyForUpdate(Integer id) {
 
-        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery().where(companyMain.ID.eq(id)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
-
+        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery()
+                .where(companyMain.ID.eq(id))
+                .groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME)
+                .fetch();
+        // список из одной компании, т.к. id уникальный для каждой компании
         List<Company> company = getCompanyList(result);
 
         return company.get(0);
@@ -124,12 +129,15 @@ public class CompanyDAO  {
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.REPEATABLE_READ)
     public void deleteCompany(Integer id) throws Exception {
 
-        int r = resultQueryCompanyCount().where(companyMain.HEADCOMPANYID.eq(id)).fetchOne(0, int.class);
+        int r = resultQueryCompanyCount().where(Companies.COMPANIES.HEADCOMPANYID.eq(id)).fetchOne(0, int.class);
         if(r>0){
             throw new Exception("Организация не может быть удалена, так как у нее есть дочерние организации");
         }
 
-        Result<Record5<Integer, String, Integer, String, Integer>> resultForDelete = resultQuery().where(companyMain.ID.eq(id)).groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME).fetch();
+        Result<Record5<Integer, String, Integer, String, Integer>> resultForDelete = resultQuery()
+                .where(companyMain.ID.eq(id))
+                .groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME)
+                .fetch();
 
 
         List<Company> companiesForDelete = getCompanyList(resultForDelete);

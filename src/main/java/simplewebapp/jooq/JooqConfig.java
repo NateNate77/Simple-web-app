@@ -53,8 +53,6 @@ public class JooqConfig {
         DefaultConfiguration config = new DefaultConfiguration();
         config.setSQLDialect(SQLDialect.POSTGRES);
         config.setConnectionProvider(getConnectionProvider());
-//        DefaultExecuteListenerProvider listenerProvider = new DefaultExecuteListenerProvider(getExceptionTranslator());
-//        config.setExecuteListenerProvider(listenerProvider);
         return config;
     }
 

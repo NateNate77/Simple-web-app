@@ -83,7 +83,6 @@ public class UserDAO  {
             throw new Exception("Введите имя");
         }
 
-
         dsl.insertInto(Staff.STAFF)
                 .set(Staff.STAFF.NAME, nameUser)
                 .set(Staff.STAFF.BOSSID, bossId)
@@ -103,13 +102,6 @@ public class UserDAO  {
             }
         }
 
-//        for (int j = 0; j<listUsersByCompany.size(); j++){
-//            if(listUsersByCompany.get(j).getBossId()==id){
-//                listUsersByCompany.remove(j);
-//                j--;
-//            }
-//        }
-
        return listUsersByCompany;
 
     }
@@ -127,10 +119,9 @@ public class UserDAO  {
     public User getUserForUpdate(Integer id){
 
         Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.ID.eq(id)).fetch();
-            List<User> user = getUserList(result);
-
-            return user.get(0);
-
+        // список из одного сотрудника, т.к. id уникальный для каждого сотрудника
+        List<User> user = getUserList(result);
+        return user.get(0);
 
     }
 
