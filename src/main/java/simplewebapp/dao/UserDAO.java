@@ -46,19 +46,25 @@ public class UserDAO  {
                 .on(staffBoss.ID.equal(staffMain.BOSSID));
     }
 
-    public List<User> getUserList(Result<Record6<Integer, String, Integer, Integer, String, String>> result){
+    private User getUser(Record6<Integer, String, Integer, Integer, String, String> record){
+
+            Integer id = record.getValue(staffMain.ID, Integer.class);
+            String name = record.getValue(staffMain.NAME, String.class);
+            Integer bossId = record.getValue(staffMain.BOSSID, Integer.class);
+            Integer companyId = record.getValue(staffMain.COMPANYID, Integer.class);
+            String companyName = record.getValue(Companies.COMPANIES.NAME, String.class);
+            String bossName = record.getValue(staffBoss.NAME, String.class);
+
+             return new User (id, name, companyId,  bossId, bossName, companyName);
+
+    }
+
+    private List<User> getUserList(Result<Record6<Integer, String, Integer, Integer, String, String>> result){
 
         List<User> list = new ArrayList<>();
         for (Record6 r : result) {
 
-            Integer id = r.getValue(staffMain.ID, Integer.class);
-            String name = r.getValue(staffMain.NAME, String.class);
-            Integer bossId = r.getValue(staffMain.BOSSID, Integer.class);
-            Integer companyId = r.getValue(staffMain.COMPANYID, Integer.class);
-            String companyName = r.getValue(Companies.COMPANIES.NAME, String.class);
-            String bossName = r.getValue(staffBoss.NAME, String.class);
-
-            User user = new User (id, name, companyId,  bossId, bossName, companyName);
+            User user = getUser(r);
 
             list.add(user);
         }
@@ -69,7 +75,6 @@ public class UserDAO  {
     public List<User> getUsers() {
 
         Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().fetch();
-
         List<User> list = getUserList(result);
 
         return list;
@@ -118,10 +123,9 @@ public class UserDAO  {
 
     public User getUserForUpdate(Integer id){
 
-        Result<Record6<Integer, String, Integer, Integer, String, String>> result = resultQuery().where(staffMain.ID.eq(id)).fetch();
-        // список из одного сотрудника, т.к. id уникальный для каждого сотрудника
-        List<User> user = getUserList(result);
-        return user.get(0);
+        Record6<Integer, String, Integer, Integer, String, String> result = resultQuery().where(staffMain.ID.eq(id)).fetchOne();
+        User user = getUser(result);
+        return user;
 
     }
 

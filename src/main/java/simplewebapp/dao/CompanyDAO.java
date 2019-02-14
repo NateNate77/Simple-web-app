@@ -47,23 +47,27 @@ public class CompanyDAO  {
 
     }
 
-    public List<Company> getCompanyList(Result<Record5<Integer, String, Integer, String, Integer>> result){
+    private List<Company> getCompanyList(Result<Record5<Integer, String, Integer, String, Integer>> result){
 
         List<Company> list = new ArrayList<>();
         for (Record5 r : result) {
 
-            Integer id = r.getValue(companyMain.ID, Integer.class);
-            String name = r.getValue(companyMain.NAME, String.class);
-            Integer headCompanyId = r.getValue(companyMain.HEADCOMPANYID, Integer.class);
-            String headCompanyName = r.getValue(companyBoss.NAME, String.class);
-            Integer usersCount = r.getValue("UsersCount", Integer.class);
-
-            Company company = new Company(id, name, headCompanyId, headCompanyName, usersCount);
+            Company company = getCompany(r);
 
             list.add(company);
         }
 
         return list;
+    }
+
+    private Company getCompany(Record5 record) {
+        Integer id = record.getValue(companyMain.ID, Integer.class);
+        String name = record.getValue(companyMain.NAME, String.class);
+        Integer headCompanyId = record.getValue(companyMain.HEADCOMPANYID, Integer.class);
+        String headCompanyName = record.getValue(companyBoss.NAME, String.class);
+        Integer usersCount = record.getValue("UsersCount", Integer.class);
+
+        return new Company(id, name, headCompanyId, headCompanyName, usersCount);
     }
 
 
@@ -96,14 +100,13 @@ public class CompanyDAO  {
 
     public Company getCompanyForUpdate(Integer id) {
 
-        Result<Record5<Integer, String, Integer, String, Integer>> result = resultQuery()
+        Record5<Integer, String, Integer, String, Integer> result = resultQuery()
                 .where(companyMain.ID.eq(id))
                 .groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME)
-                .fetch();
-        // список из одной компании, т.к. id уникальный для каждой компании
-        List<Company> company = getCompanyList(result);
+                .fetchOne();
 
-        return company.get(0);
+        Company company = getCompany(result);
+        return company;
 
     }
 
@@ -134,15 +137,13 @@ public class CompanyDAO  {
             throw new Exception("Организация не может быть удалена, так как у нее есть дочерние организации");
         }
 
-        Result<Record5<Integer, String, Integer, String, Integer>> resultForDelete = resultQuery()
+                Record5<Integer, String, Integer, String, Integer> resultForDelete = resultQuery()
                 .where(companyMain.ID.eq(id))
                 .groupBy(companyMain.ID, companyMain.NAME, companyMain.HEADCOMPANYID, companyBoss.NAME)
-                .fetch();
+                .fetchOne();
 
-
-        List<Company> companiesForDelete = getCompanyList(resultForDelete);
-            // проверяем только первый элемент списка, так как id уникальный для каждой организации
-            if(companiesForDelete.get(0).getUsersCount()>0){
+            Company companiesForDelete = getCompany(resultForDelete);
+            if(companiesForDelete.getUsersCount()>0){
                 throw new Exception("Организация не может быть удалена, так как у нее есть сотрудники");
             }
 
